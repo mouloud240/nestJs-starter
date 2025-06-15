@@ -90,7 +90,7 @@ src/
 
 ```bash
 # Clone the repo
-git clone https://github.com/your-org/nestjs-starter.git
+git clone https://github.com/mouloud240/nestjs-starter.git
 cd nestjs-starter
 
 # Install dependencies
@@ -121,7 +121,7 @@ npm run start:dev
 Swagger is auto-generated at runtime and available at:
 
 ```
-http://localhost:3000/docs
+http://localhost:3000/api-docs
 ```
 
 Beautiful UI powered by [Scalar](https://github.com/sdorra/swagger-ui-scalar).
