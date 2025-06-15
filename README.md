@@ -30,6 +30,7 @@ A scalable, production-ready NestJS boilerplate with batteries included. This st
 
   * CSRF protection (double-submit cookie strategy)
   * Secure headers via `Helmet`
+  * **Rate Limiting** with `@nestjs/throttler`
 * 📚 **API Documentation**:
 
   * Swagger auto-generated docs
@@ -38,6 +39,12 @@ A scalable, production-ready NestJS boilerplate with batteries included. This st
 
   * Bull Module with Redis backend
   * For tasks like email queues, notifications, etc.
+* 🔁 **Health Checks**:
+
+  * Exposed endpoint for service health & readiness using `@nestjs/terminus`
+* 📦 **Docker Compose Ready**:
+
+  * Includes services like Redis, Elasticsearch, and more
 * 📑 **Request & Response Logging**:
 
   * Custom **interceptors** log HTTP traffic
@@ -90,7 +97,7 @@ src/
 
 ```bash
 # Clone the repo
-git clone https://github.com/mouloud240/nestjs-starter.git
+git clone https://github.com/your-org/nestjs-starter.git
 cd nestjs-starter
 
 # Install dependencies
@@ -153,6 +160,7 @@ You can use Redis for:
 
 * Caching
 * Pub/Sub (real-time messaging)
+* Redis Streams (event queues)
 * WebSocket scaling
 
 Configured in `redis/` module.
@@ -171,15 +179,29 @@ This starter includes:
 
 * Helmet for HTTP header protection
 * Double CSRF strategy using cookie and token
-* Rate limiting (optional)
+* Rate limiting using `@nestjs/throttler`
+
 ---
-## Current Status
-the starter is in the start of it but it should only take 1-2 days to be production ready, the current features are enough to start a project and add more features later on.
-## 📜 Contributing
-We welcome contributions! Please read our [Contributing Guide](CONTRIBUTING.md) for details on our code of conduct, and the process for submitting pull requests.
+
+## ❤️ Health Checks
+
+* Powered by `@nestjs/terminus`
+* Endpoint: `/health`
+* Checks Redis, Elasticsearch, Database, etc.
+
+---
+
+## 🐳 Docker Compose
+
+Use `docker-compose.yml` to spin up:
+
+* Redis
+* Elasticsearch
+* (Add other services like Postgres, Mailhog, etc.)
+
+---
 
 ## 📦 License
 
-MIT © 2025  Mouloud Hasrane
-
+MIT © 2025 Mouloud Hasrane
 
