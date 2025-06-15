@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
 import { ConfigModule } from '@nestjs/config';
+import { RedisModule } from './redis/redis.module';
 import appConfig from './config/app.config';
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import appConfig from './config/app.config';
       validationSchema: null, // You can define a Joi schema here for validation if needed
       load: [appConfig],
     }),
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [AppService],
