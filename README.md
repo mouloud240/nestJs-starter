@@ -4,6 +4,25 @@
 A scalable, production-ready NestJS boilerplate with batteries included. This starter is built for teams and individuals who want a robust backend setup with Redis, Elasticsearch, WebSockets, and more.
 
 ---
+## Status 
+this project is currently in active development most features should be done in a  day or 2. Contributions are welcome!
+## 📖 Table of Contents
+- [🚀 Features](#-features)
+- [📂 Folder Structure](#-folder-structure)
+- [🛠️ Setup & Run](#-setup--run)
+- [🧪 Scripts](#-scripts)
+- [📖 API Documentation](#-api-documentation)
+- [📬 Mailer Setup](#-mailer-setup)
+- [⚙️ Background Jobs](#-background-jobs)
+- [🧠 Redis Usage](#-redis-usage)
+- [🌐 WebSockets](#-websockets)
+- [🔒 Security](#-security)
+- [❤️ Health Checks](#-health-checks)
+- [🐳 Docker Compose](#-docker-compose)
+- [📦 License](#-license)
+- [🤝 Contributing](#-contributing)
+- [🧑‍💻 Author](#-author)
+- [📬 Contact](#-contact)
 
 ## 🚀 Features
 
@@ -205,3 +224,9 @@ Use `docker-compose.yml` to spin up:
 
 MIT © 2025 Mouloud Hasrane
 
+## 🤝 Contributing
+Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to contribute to this project.
+## 🧑‍💻 author
+Mouloud Hasrane
+## 📬 contact
+if you have any questions or suggestions, feel free to reach out via:mouloudhasrane@gmail.com
