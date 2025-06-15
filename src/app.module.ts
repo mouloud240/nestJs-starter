@@ -9,8 +9,20 @@ import { AppConfig } from './config/interfaces/app-config.interface';
 import { QUEUE_NAME } from './common/constants/queues';
 import { AuthenticationModule } from './authentication/authentication.module';
 import { UserModule } from './user/user.module';
+import { ThrottlerModule } from '@nestjs/throttler';
 @Module({
   imports: [
+    ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          name: 'global',
+          limit: 100, // Maximum number of requests
+          ttl: 60, // Time to live in seconds
+          blockDuration: 10, // Block duration in seconds
+          ignoreUserAgents: [/^curl\//i], // Ignore requests from curl user agent
+        },
+      ],
+    }),
     ConfigModule.forRoot({
       isGlobal: true, // Makes the configuration available globally
       validationSchema: null, // You can define a Joi schema here for validation if needed
