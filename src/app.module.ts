@@ -10,7 +10,6 @@ import { QUEUE_NAME } from './common/constants/queues';
 import { AuthenticationModule } from './authentication/authentication.module';
 import { UserModule } from './user/user.module';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { MailerModule } from './mailer/mailer.module';
 import { EmailModule } from './email/email.module';
 import { HealthModule } from './health/health.module';
 @Module({
@@ -61,7 +60,6 @@ import { HealthModule } from './health/health.module';
     ),
     AuthenticationModule,
     UserModule,
-    MailerModule,
     EmailModule,
     HealthModule,
   ],
