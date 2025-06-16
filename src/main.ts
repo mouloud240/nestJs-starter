@@ -5,8 +5,11 @@ import { apiReference } from '@scalar/nestjs-api-reference';
 import session from 'express-session';
 import helmet from 'helmet';
 import passport from 'passport';
-
+import { doubleCsrf, DoubleCsrfConfigOptions } from 'csrf-csrf';
 import { AppModule } from './app.module';
+import { LoggerInterceptor } from './global/interceptors/logger.interceptor';
+import { ExtendedRequest } from './authentication/types/extended-req.type';
+import { Request } from 'express';
 async function bootstrap() {
   // the cors will be changed to the front end url  in production environnement
   const app = await NestFactory.create(AppModule, {
@@ -53,24 +56,23 @@ async function bootstrap() {
 
   app.use(passport.initialize());
 
-  //TODO configure with devops team later
-  // const opts: DoubleCsrfConfigOptions = {
-  //   getSecret: () => 'Secret', //TODO:generate a secret
-  //   getSessionIdentifier: (req: extendedReq) => req.user.id.toString(), //TODO:figure this out    cookieName: '__Host-psifi.x-csrf-token', // The name of the cookie to be used, recommend using Host prefix.
-  //   cookieOptions: {
-  //     sameSite: 'lax', // Recommend you make this strict if posible
-  //     path: '/',
-  //     secure: false, //TODO:change in prod
-  //     httpOnly: false,
-  //   },
-  //   size: 64, // The size of the generated tokens in bits
-  //   ignoredMethods: ['GET', 'HEAD', 'OPTIONS'], // A list of request methods that will not be protected.
-  //   getTokenFromRequest: (req) => req.headers['x-csrf-token'], // A function that returns the token from the request
-  // };
-  // const { doubleCsrfProtection } = doubleCsrf(opts);
-  // //app.use(doubleCsrfProtection); //TODO:configure in prod
+  const opts: DoubleCsrfConfigOptions = {
+    getSecret: () => 'Secret', //TODO:generate a secret
+    getSessionIdentifier: (req: ExtendedRequest) => req.user.id.toString(), //TODO:figure this out    cookieName: '__Host-psifi.x-csrf-token', // The name of the cookie to be used, recommend using Host prefix.
+    cookieOptions: {
+      sameSite: 'lax', // Recommend you make this strict if posible
+      path: '/',
+      secure: false, //TODO:change in prod
+      httpOnly: false,
+    },
+    size: 64, // The size of the generated tokens in bits
+    ignoredMethods: ['GET', 'HEAD', 'OPTIONS'], // A list of request methods that will not be protected.
+    //getTokenFromRequest: (req) => req.headers['x-csrf-token'], // A function that returns the token from the request
+  };
+  const { doubleCsrfProtection } = doubleCsrf(opts);
+  app.use(doubleCsrfProtection);
   //
-  // app.useGlobalInterceptors(new LoggerInterceptor());
+  app.useGlobalInterceptors(new LoggerInterceptor());
   // //PIPES
   app.useGlobalPipes(
     new ValidationPipe({
@@ -81,11 +83,7 @@ async function bootstrap() {
   );
 
   //FILTERS
-  // app.useGlobalFilters(new PrismaExceptionFilter());
-  // app.useGlobalFilters(new RedisExceptionFilter());
-  // app.useGlobalFilters(new GlobalExceptionFilter());
   // app.useGlobalFilters(new CustomWsExceptionFilter());
-  //
   //app.useGlobalFilters(new ElasticSearchExceptionFilter()); //TODO:figure out what error to catch
   //--
   app.enableShutdownHooks();
