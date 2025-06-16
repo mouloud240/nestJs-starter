@@ -10,6 +10,8 @@ import { QUEUE_NAME } from './common/constants/queues';
 import { AuthenticationModule } from './authentication/authentication.module';
 import { UserModule } from './user/user.module';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { MailerModule } from './mailer/mailer.module';
+import { EmailModule } from './email/email.module';
 @Module({
   imports: [
     ThrottlerModule.forRoot({
@@ -58,6 +60,8 @@ import { ThrottlerModule } from '@nestjs/throttler';
     ),
     AuthenticationModule,
     UserModule,
+    MailerModule,
+    EmailModule,
   ],
   controllers: [AppController],
   providers: [AppService],
