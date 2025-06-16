@@ -6,6 +6,7 @@ import { User } from 'src/user/entities/user.entity';
 import { registerDto } from './dtos/requests/register.dto';
 import { ApiOkResponse, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthResponseDto } from './dtos/responses/auth-response.dto';
+import { RefreshTokenGuard } from './guards/refresh-token.guard';
 
 @Controller('authentication')
 export class AuthenticationController {
@@ -47,5 +48,22 @@ export class AuthenticationController {
   @Post('register')
   async register(@Body() data:registerDto) {
     return this.authenticationService.registerUser(data);
+  }
+  @UseGuards(RefreshTokenGuard)
+  @Post('refresh')
+  @ApiOperation({
+    summary: 'Refresh tokens',
+    description: 'Refreshes access and refresh tokens using a valid refresh token.',
+  })
+  @ApiOkResponse({
+    description: 'Returns the new access token and refresh token.',
+    type: () => AuthResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized. Invalid refresh token provided.',
+  })
+  async refreshTokens(@USER() user: User) {
+    return this.authenticationService.issueTokens(user);
   }
 }
