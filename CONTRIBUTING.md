@@ -37,7 +37,7 @@ This project aims to:
 5. Run the development server:
 
    ```bash
-   npm run start:dev
+   pnpm run start:dev
    ```
 
 ---
@@ -50,9 +50,8 @@ This project aims to:
 Branch naming convention:
 
 ```
-feature/my-new-feature
-fix/login-error
-chore/update-readme
+pseudo-name/feature
+kingSlayer/auth
 ```
 
 ---
@@ -65,17 +64,18 @@ chore/update-readme
 * Lint before you push:
 
   ```bash
-  npm run lint
+  pnpm run lint
   ```
 * Write meaningful commit messages.
+* Follow this commit-message Guide  [COMMIT.md](COMMIT.md) 
 
 ### 🧪 Testing
 
-* Write unit tests for new features when applicable.
+* Write unit tests for new features when applicable (usualy not applicable so don't worry to much about it).
 * Run all tests before submitting:
 
   ```bash
-  npm test
+  pnpm test
   ```
 
 ### 📚 Documentation
