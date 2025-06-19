@@ -1,28 +1,32 @@
-
 # 🧪 NestJS Starter
 
 A scalable, production-ready NestJS boilerplate with batteries included. This starter is built for teams and individuals who want a robust backend setup with Redis, Elasticsearch, WebSockets, and more.
 
 ---
-## Status 
-this project is currently in active development most features should be done in a  day or 2. Contributions are welcome!
+
+## Status
+
+This project is currently in active development. Most features should be done in a day or two. Contributions are welcome!
+
 ## 📖 Table of Contents
-- [🚀 Features](#-features)
-- [📂 Folder Structure](#-folder-structure)
-- [🛠️ Setup & Run](#-setup--run)
-- [🧪 Scripts](#-scripts)
-- [📖 API Documentation](#-api-documentation)
-- [📬 Mailer Setup](#-mailer-setup)
-- [⚙️ Background Jobs](#-background-jobs)
-- [🧠 Redis Usage](#-redis-usage)
-- [🌐 WebSockets](#-websockets)
-- [🔒 Security](#-security)
-- [❤️ Health Checks](#-health-checks)
-- [🐳 Docker Compose](#-docker-compose)
-- [📦 License](#-license)
-- [🤝 Contributing](#-contributing)
-- [🧑‍💻 Author](#-author)
-- [📬 Contact](#-contact)
+
+* [🚀 Features](#-features)
+* [📂 Folder Structure](#-folder-structure)
+* [🛠️ Setup & Run](#-setup--run)
+* [🧪 Scripts](#-scripts)
+* [📖 API Documentation](#-api-documentation)
+* [📬 Mailer Setup](#-mailer-setup)
+* [⚙️ Background Jobs](#-background-jobs)
+* [🧠 Redis Usage](#-redis-usage)
+* [🌐 WebSockets](#-websockets)
+* [🔒 Security](#-security)
+* [❤️ Health Checks](#-health-checks)
+* [🐳 Docker Compose](#-docker-compose)
+* [🚄 Fastify Support](#-fastify-support)
+* [📦 License](#-license)
+* [🤝 Contributing](#-contributing)
+* [🧑‍💻 Author](#-author)
+* [📬 Contact](#-contact)
 
 ## 🚀 Features
 
@@ -220,13 +224,32 @@ Use `docker-compose.yml` to spin up:
 
 ---
 
+## 🚄 Fastify Support
+
+This project includes a `fastify` branch which provides the same feature set using NestJS with [Fastify](https://www.fastify.io/) instead of Express.
+
+### 📘 How to Choose
+
+Refer to [`CHOOSE.md`](CHOOSE.md) to decide whether to use the default (Express) or Fastify branch. It outlines:
+
+* Pros and cons of each adapter
+* Performance and ecosystem differences
+* Compatibility notes
+
+---
+
 ## 📦 License
 
 MIT © 2025 Mouloud Hasrane
 
 ## 🤝 Contributing
+
 Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to contribute to this project.
-## 🧑‍💻 author
+
+## 🧑‍💻 Author
+
 Mouloud Hasrane
-## 📬 contact
-if you have any questions or suggestions, feel free to reach out via:mouloudhasrane@gmail.com
+
+## 📬 Contact
+
+If you have any questions or suggestions, feel free to reach out via: [mouloudhasrane@gmail.com](mailto:mouloudhasrane@gmail.com)
