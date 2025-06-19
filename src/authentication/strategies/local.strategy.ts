@@ -8,12 +8,12 @@ import { User } from 'src/user/entities/user.entity';
 export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
   constructor(private readonly authenticationService: AuthenticationService) {
     super({
-      usernameField: 'email', //change this to 'username' if you want to use username instead of email
+      usernameField: 'email', // The field in the request body that contains the email
       passwordField: 'password',
       passReqToCallback: true, // Allows us to access the request object
     });
   }
-  async validate(email: string, password: string): Promise<User> {
+  async validate(req: Request, email: string, password: string): Promise<User> {
     const result = await this.authenticationService.validateUser(
       email,
       password,

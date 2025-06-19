@@ -12,9 +12,10 @@ import { UserModule } from './user/user.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { EmailModule } from './email/email.module';
 import { HealthModule } from './health/health.module';
+import { MailerModule } from '@nestjs-modules/mailer';
 @Module({
   imports: [
-    ThrottlerModule.forRoot({
+      ThrottlerModule.forRoot({
       throttlers: [
         {
           name: 'global',
@@ -58,10 +59,11 @@ import { HealthModule } from './health/health.module';
         name: queueName,
       })),
     ),
-    AuthenticationModule,
-    UserModule,
+
     EmailModule,
+    UserModule,
     HealthModule,
+    AuthenticationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

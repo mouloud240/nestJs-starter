@@ -17,8 +17,9 @@ export default (): AppConfig => ({
 
   auth: {
     jwt: {
-      accessTokenSecret: process.env.JWT_ACCESS_TOKEN_SECRET!,
-      refreshTokenSecret: process.env.JWT_REFRESH_TOKEN_SECRET!,
+      accessTokenSecret: process.env.JWT_ACCESS_TOKEN_SECRET || 'Not Secure',
+      refreshTokenSecret:
+        process.env.JWT_REFRESH_TOKEN_SECRET! || 'Not Secure too',
       accessTokenExpiresIn: parseInt(
         process.env.JWT_ACCESS_TOKEN_EXPIRES_IN || '86400',
       ), // 1 day

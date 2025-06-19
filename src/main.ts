@@ -2,19 +2,19 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { apiReference } from '@scalar/nestjs-api-reference';
-import session from 'express-session';
 import helmet from 'helmet';
 import passport from 'passport';
 import { doubleCsrf, DoubleCsrfConfigOptions } from 'csrf-csrf';
 import { AppModule } from './app.module';
 import { LoggerInterceptor } from './global/interceptors/logger.interceptor';
 import { ExtendedRequest } from './authentication/types/extended-req.type';
-import { Request } from 'express';
+import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 async function bootstrap() {
   // the cors will be changed to the front end url  in production environnement
-  const app = await NestFactory.create(AppModule, {
+  const app = await NestFactory.create<NestFastifyApplication>(AppModule,new FastifyAdapter({}),  {
     cors: {
       origin: ['http://localhost:3000', 'https://beta.portals.cam'],
+
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
       credentials: true,
     },
@@ -44,17 +44,7 @@ async function bootstrap() {
     }),
   );
 
-  app.use(
-    session({
-      secret: 'my-secret',
-      resave: false,
-      saveUninitialized: false,
-    }),
-  );
 
-  app.use(passport.session());
-
-  app.use(passport.initialize());
 
   const opts: DoubleCsrfConfigOptions = {
     getSecret: () => 'Secret', //TODO:generate a secret
@@ -70,7 +60,7 @@ async function bootstrap() {
     //getTokenFromRequest: (req) => req.headers['x-csrf-token'], // A function that returns the token from the request
   };
   const { doubleCsrfProtection } = doubleCsrf(opts);
-  app.use(doubleCsrfProtection);
+  // app.use(doubleCsrfProtection);
   //
   app.useGlobalInterceptors(new LoggerInterceptor());
   // //PIPES
@@ -123,13 +113,8 @@ async function bootstrap() {
     .addTag('Portals')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  app.use(
-    '/api-docs',
-    apiReference({
-      theme: 'solarized',
-      content: document,
-    }),
-  );
+  
+  SwaggerModule.setup('api-docs', app, document, {});
 
   //RUNNING THE APPLICATION
   const port = process.env.PORT || 3000;
