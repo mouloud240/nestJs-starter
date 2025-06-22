@@ -57,8 +57,8 @@ importers:
         specifier: ^11.1.3
         version: 11.1.3(@nestjs/common@11.1.3(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.3)(@nestjs/platform-socket.io@11.1.3)(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@scalar/nestjs-api-reference':
-        specifier: ^0.5.3
-        version: 0.5.3
+        specifier: ^0.5.5
+        version: 0.5.5
       '@socket.io/redis-adapter':
         specifier: ^8.3.0
         version: 8.3.0(socket.io-adapter@2.5.5)
@@ -1194,16 +1194,16 @@ packages:
     resolution: {integrity: sha512-YLT9Zo3oNPJoBjBc4q8G2mjU4tqIbf5CEOORbUUr48dCD9q3umJ3IPlVqOqDakPfd2HuwccBaqlGhN4Gmr5OWg==}
     engines: {node: ^12.20.0 || ^14.18.0 || >=16.0.0}
 
-  '@scalar/nestjs-api-reference@0.5.3':
-    resolution: {integrity: sha512-Zv2pVj65ufi7p2eXua6qi5PUTU1FcGo8qQKBdHh2rjPfsGQ/WMGV1UkY2C+pwXPlieqBC4dg7fTeMXWpCqcZzQ==}
+  '@scalar/nestjs-api-reference@0.5.5':
+    resolution: {integrity: sha512-ya8rSclVOZsO5shx7wRUK/E1d2kZSvBfJCCfIiyxCfMb95HbaloUGdcYwTa+5VlaPX7ljq6a8fs4fdfCAD0WnA==}
     engines: {node: '>=20'}
 
   '@scalar/openapi-types@0.3.3':
     resolution: {integrity: sha512-mr3OvbCyvuzSDgv9gR9D3pJAsl82BRNBp1P8ldgRgKF4Wiswfa7nQeKibpX0kHSGXLgiyvxWJULUFwgdWMXNNA==}
     engines: {node: '>=20'}
 
-  '@scalar/types@0.2.3':
-    resolution: {integrity: sha512-K1/Vp5xaQ8TEGDYwHg88OBuQWJRWrE3ToZ0Z2LJwskcY1Eg+uDiRQXKF4QPngZzu5rrWgRErAq4yte4Y7omqgA==}
+  '@scalar/types@0.2.4':
+    resolution: {integrity: sha512-OpsNJN0r3hVVR8mF1YDO+YioeRmva/7pPravDh3GsWNQOSBOaFzLac8IkRLI+gBMpsIcJq1s+lisqPg+GHNiaA==}
     engines: {node: '>=20'}
 
   '@scarf/scarf@1.4.0':
@@ -1445,8 +1445,8 @@ packages:
   '@types/mjml@4.7.4':
     resolution: {integrity: sha512-vyi1vzWgMzFMwZY7GSZYX0GU0dmtC8vLHwpgk+NWmwbwRSrlieVyJ9sn5elodwUfklJM7yGl0zQeet1brKTWaQ==}
 
-  '@types/node@20.19.0':
-    resolution: {integrity: sha512-hfrc+1tud1xcdVTABC2JiomZJEklMcXYNTVtZLAeqTVWD+qL5jkHKT+1lOtqDdGxt+mB53DTtiz673vfjU8D1Q==}
+  '@types/node@20.19.1':
+    resolution: {integrity: sha512-jJD50LtlD2dodAEO653i3YF04NWak6jN3ky+Ri3Em3mGR39/glWiboM/IePaRbgwSfqM1TpGXfAg8ohn/4dTgA==}
 
   '@types/node@22.15.31':
     resolution: {integrity: sha512-jnVe5ULKl6tijxUhvQeNbQG/84fHfg+yMak02cT8QVhBx/F05rAVxCGBYYTh2EKz22D6JF5ktXuNwdx7b9iEGw==}
@@ -5887,15 +5887,15 @@ snapshots:
 
   '@pkgr/core@0.2.7': {}
 
-  '@scalar/nestjs-api-reference@0.5.3':
+  '@scalar/nestjs-api-reference@0.5.5':
     dependencies:
-      '@scalar/types': 0.2.3
+      '@scalar/types': 0.2.4
 
   '@scalar/openapi-types@0.3.3':
     dependencies:
       zod: 3.24.1
 
-  '@scalar/types@0.2.3':
+  '@scalar/types@0.2.4':
     dependencies:
       '@scalar/openapi-types': 0.3.3
       nanoid: 5.1.5
@@ -6145,7 +6145,7 @@ snapshots:
       '@types/mjml-core': 4.15.2
     optional: true
 
-  '@types/node@20.19.0':
+  '@types/node@20.19.1':
     dependencies:
       undici-types: 6.21.0
 
@@ -6550,7 +6550,7 @@ snapshots:
       '@swc/helpers': 0.5.17
       '@types/command-line-args': 5.2.3
       '@types/command-line-usage': 5.0.4
-      '@types/node': 20.19.0
+      '@types/node': 20.19.1
       command-line-args: 6.0.1
       command-line-usage: 7.0.3
       flatbuffers: 24.12.23
