@@ -12,6 +12,7 @@ import { UserModule } from './user/user.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { EmailModule } from './email/email.module';
 import { HealthModule } from './health/health.module';
+import { QueueModule } from './queue/queue.module';
 @Module({
   imports: [
     ThrottlerModule.forRoot({
@@ -62,6 +63,7 @@ import { HealthModule } from './health/health.module';
     UserModule,
     EmailModule,
     HealthModule,
+    QueueModule,
   ],
   controllers: [AppController],
   providers: [AppService],
