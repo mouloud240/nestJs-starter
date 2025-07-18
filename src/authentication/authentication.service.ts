@@ -69,17 +69,14 @@ export class AuthenticationService {
   }
   async registerUser(data: registerDto) {
     const user = await this.userService.createUser(data);
-    if (user.ok === false) {
-      return err(user.error);
-    }
-    const tokens = await this.issueTokens(user.value);
+    const tokens = await this.issueTokens(user);
     if (!tokens.ok) {
       return err('Failed to issue tokens');
     }
     return ok({
       accessToken: tokens.value.accessToken,
       refreshToken: tokens.value.refreshToken,
-      user: user.value,
+      user: user,
     });
   }
 }

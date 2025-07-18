@@ -13,6 +13,11 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { EmailModule } from './email/email.module';
 import { HealthModule } from './health/health.module';
 import { QueueModule } from './queue/queue.module';
+import { PrismaModule } from './prisma/prisma.module';
+import { PaymentModule } from './payment/payment.module';
+import { SacrificeModule } from './sacrifice/sacrifice.module';
+import { NotificationModule } from './notification/notification.module';
+import { SacrificeVideoModule } from './sacrifice-video/sacrifice-video.module';
 @Module({
   imports: [
     ThrottlerModule.forRoot({
@@ -64,6 +69,11 @@ import { QueueModule } from './queue/queue.module';
     EmailModule,
     HealthModule,
     QueueModule,
+    PrismaModule,
+    PaymentModule,
+    SacrificeModule,
+    NotificationModule,
+    SacrificeVideoModule,
   ],
   controllers: [AppController],
   providers: [AppService],
