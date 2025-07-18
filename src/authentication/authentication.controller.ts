@@ -19,8 +19,7 @@ export class AuthenticationController {
   })
   @ApiOkResponse({
     description: 'Returns the access token, refresh token, and user details.',
-    type: () => AuthResponseDto, 
-    
+    type: () => AuthResponseDto,
   })
   @ApiResponse({
     status: 401,
@@ -28,9 +27,10 @@ export class AuthenticationController {
   })
   @ApiResponse({
     status: 400,
-    description: 'Bad Request. The request body is invalid or missing required fields.',
+    description:
+      'Bad Request. The request body is invalid or missing required fields.',
   })
-  async login(@USER() user:User) {
+  async login(@USER() user: User) {
     return this.authenticationService.issueTokens(user);
   }
   @ApiOperation({
@@ -43,17 +43,19 @@ export class AuthenticationController {
   })
   @ApiResponse({
     status: 400,
-    description: 'Bad Request. The request body is invalid or missing required fields.',
+    description:
+      'Bad Request. The request body is invalid or missing required fields.',
   })
   @Post('register')
-  async register(@Body() data:registerDto) {
+  async register(@Body() data: registerDto) {
     return this.authenticationService.registerUser(data);
   }
   @UseGuards(RefreshTokenGuard)
   @Post('refresh')
   @ApiOperation({
     summary: 'Refresh tokens',
-    description: 'Refreshes access and refresh tokens using a valid refresh token.',
+    description:
+      'Refreshes access and refresh tokens using a valid refresh token.',
   })
   @ApiOkResponse({
     description: 'Returns the new access token and refresh token.',

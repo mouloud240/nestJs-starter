@@ -1,0 +1,83 @@
+services: 
+  server:
+    image: portals-core-api
+    build:
+      context: .
+    # Set the environment to production for the production build and development for the development 
+    environment:
+      NODE_ENV: developement
+      TSC_WATCHFILE: UsePolling
+    networks:
+        - app-network
+    env_file:
+      - .env
+    ports:
+      - 3000:3000
+    volumes:
+      - ./src:/app/src
+      - ./prisma/migrations:/app/prisma/migrations 
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      search:
+        condition: service_healthy
+  db:
+    networks:
+        - app-network
+    image: postgres:latest
+    restart: unless-stopped
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=main
+    expose:
+      - 5432
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U portals"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 20s 
+  redis:
+    networks:
+        - app-network
+    image: redis/redis-stack
+    restart: always
+    expose:
+     - 6379
+     - 8001
+    ports:
+     - 6379:6379
+     - 8001:8001
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  search:
+    networks:
+        - app-network
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.0.2
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    environment:
+      - discovery.type=single-node
+      - ELASTIC_PASSWORD=portals
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+    ports:
+      - "9200:9200"
+volumes:
+  db-data:
+networks:
+  app-network:
+    driver: bridge
