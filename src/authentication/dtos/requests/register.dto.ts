@@ -8,13 +8,6 @@ import {
 import { Match } from './Match.decorator';
 
 export class registerDto {
-  @IsString()
-  @IsNotEmpty()
-  @ApiProperty({
-    type: String,
-    description: 'Username for the new user',
-  })
-  username: string;
   @ApiProperty({
     type: String,
     description: 'Email address for the new user',
@@ -34,4 +27,15 @@ export class registerDto {
     description: 'Confirm password for the new user, must match the password',
   })
   confirmPassword: string;
+  @ApiProperty({ description: 'User phone number', type: 'string' })
+  @IsString()
+  @IsNotEmpty()
+  phoneNumber: string;
+
+  @IsString()
+  @ApiProperty({ description: 'the User first Name' })
+  firstName: string;
+  @IsString()
+  @ApiProperty({ description: 'Last name' })
+  lastName: string;
 }
