@@ -6,7 +6,6 @@ import { UserService } from 'src/user/user.service';
 import { RefreshTokenPayload } from '../interfaces/refresh-token.dto';
 import { User } from 'src/user/entities/user.entity';
 
-
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(
   Strategy,
@@ -19,7 +18,8 @@ export class RefreshTokenStrategy extends PassportStrategy(
     super({
       jwtFromRequest: ExtractJwt.fromBodyField('refreshToken'),
       ignoreExpiration: false,
-      secretOrKey: configService.get<string>('auth.jwt.refreshTokenSecret')!,
+      secretOrKey:
+        configService.get<string>('auth.jwt.refreshTokenSecret') ?? 'dla3',
     });
   }
 

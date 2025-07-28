@@ -1,0 +1,179 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  firstName   String
+  lastName    String
+  phoneNumber String
+  email       String @unique
+  password    String
+  role        UserRole
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  sacrifices Sacrifice[]
+  // Relationships
+  donationTransactions     UserDonationTransaction[]
+  sacrificesAsDonor        Sacrifice[]               @relation("DonorSacrifices")
+  sacrificesCountAsOfferer SacrificerSacrificesCount[]
+  notifications            Notification[]
+
+  @@map("user")
+}
+
+model Transaction {
+  id            String            @id @default(cuid())
+  paymentMethod String
+  amount        Float
+  currency      String
+  status        TransactionStatus
+  gateway       GatewayEnum
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  // Relationships
+  userDonationTransaction UserDonationTransaction?
+
+  @@map("transaction")
+}
+
+model UserDonationTransaction {
+  id            String   @id @default(cuid())
+  donorId       String
+  transactionId String   @unique
+  qty           Int
+  year          Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relationships
+  donor       User        @relation(fields: [donorId], references: [id])
+  transaction Transaction @relation(fields: [transactionId], references: [id])
+
+  @@map("userDonationTransaction")
+}
+
+model Sacrifice {
+  id                  String           @id @default(cuid())
+  donorId             String
+  status              SacrificeStatus
+  currentLocationId   String?
+  sacrificeVideoId    String           @unique
+  sacrificedById String?
+  sacrificer User? @relation(references: [id],fields: [sacrificedById])
+  year                Int
+  slayedAt            DateTime?
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+
+  // Relationships
+  donor           User           @relation("DonorSacrifices", fields: [donorId], references: [id])
+  currentLocation Location?      @relation(fields: [currentLocationId], references: [id])
+  sacrificeVideo  SacrificeVideo @relation(fields: [sacrificeVideoId], references: [id])
+
+  @@map("sacrifice")
+}
+
+model SacrificerSacrificesCount {
+  id           String   @id @default(cuid())
+  sacrificerId String
+  count        Int
+  doneCount    Int
+  year         Int
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  // Relationships
+  sacrificer User @relation(fields: [sacrificerId], references: [id])
+
+  @@map("sacrificerSacrficesCount")
+}
+
+model Location {
+  id        String   @id @default(cuid())
+  long      Float
+  lat       Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  sacrifices Sacrifice[]
+
+  @@map("location")
+}
+
+model SacrificeVideo {
+  id      String      @id @default(cuid())
+  url     String
+  blurUrl String
+  jobId   String
+  status  VideoStatus
+
+  // Relationships
+  sacrifice Sacrifice?
+
+  @@map("sacrificeVideo")
+}
+
+model Notification {
+  id         String             @id @default(cuid())
+  receiverId String
+  title      String
+  content    String
+  status     NotificationStatus
+  createdAt  DateTime           @default(now())
+  updatedAt  DateTime           @updatedAt
+
+  // Relationships
+  receiver User @relation(fields: [receiverId], references: [id])
+
+  @@map("notification")
+}
+
+// Enums
+enum UserRole {
+  ORGANIZER
+  DBA7
+  DRIVER
+  DONOR
+}
+
+enum SacrificeStatus {
+  pending
+  delivred
+  sacrifiedc
+}
+
+enum VideoStatus {
+  uploaded
+  failed
+  confirmed
+  sent
+  processing
+  processing_failed
+}
+
+enum TransactionStatus {
+  pending
+  succeeded
+  failed
+}
+
+enum GatewayEnum {
+  STRIPE
+  PAYPAL
+  CIB
+  CASH
+}
+
+enum NotificationStatus {
+  pending
+  sent
+  failed
+}
