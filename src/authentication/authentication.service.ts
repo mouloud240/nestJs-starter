@@ -19,6 +19,13 @@ export class AuthenticationService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
+
+  /**
+   * Validates a user's credentials.
+   * @param {string} email - The user's email.
+   * @param {string} password - The user's password.
+   * @returns {Promise<result<User, string>>} A result object containing the user if validation is successful, or an error message if not.
+   */
   async validateUser(
     email: string,
     password: string,
@@ -33,6 +40,12 @@ export class AuthenticationService {
     }
     return { ok: true, value: user };
   }
+
+  /**
+   * Issues new access and refresh tokens for a user.
+   * @param {User} user - The user object.
+   * @returns {Promise<result<AuthResponseDto, string>>} A result object containing the access token, refresh token, and user details, or an error message.
+   */
   async issueTokens(user: User): Promise<result<AuthResponseDto, string>> {
     try {
       const { id, email } = user;
@@ -67,19 +80,22 @@ export class AuthenticationService {
       return err('Failed to issue tokens');
     }
   }
+
+  /**
+   * Registers a new user.
+   * @param {registerDto} data - The user registration data.
+   * @returns {Promise<result<AuthResponseDto, string>>} A result object containing the access token, refresh token, and user details, or an error message.
+   */
   async registerUser(data: registerDto) {
     const user = await this.userService.createUser(data);
-    if (user.ok === false) {
-      return err(user.error);
-    }
-    const tokens = await this.issueTokens(user.value);
+    const tokens = await this.issueTokens(user);
     if (!tokens.ok) {
       return err('Failed to issue tokens');
     }
     return ok({
       accessToken: tokens.value.accessToken,
       refreshToken: tokens.value.refreshToken,
-      user: user.value,
+      user: user,
     });
   }
 }
