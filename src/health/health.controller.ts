@@ -1,4 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
+import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import {
   DiskHealthIndicator,
   HealthCheck,
@@ -15,11 +16,17 @@ export class HealthController {
     private disk: DiskHealthIndicator,
     private memory: MemoryHealthIndicator,
   ) {}
-  //ADD you healthChecks Endpoints here
-  //NOTE:this will be configurable later via the module itself to only define name and endpoint
-  // Example: Check if the GitHub service is reachable
+
   @Get()
   @HealthCheck()
+  @ApiOperation({
+    summary: 'Check the health of the service',
+    description:
+      'Checks the health of the service, including HTTP, disk, and memory.',
+  })
+  @ApiOkResponse({
+    description: 'The health check results.',
+  })
   check() {
     return this.health.check([
       () => this.http.pingCheck('github', 'https://github.com'),
@@ -31,5 +38,5 @@ export class HealthController {
       () => this.memory.checkHeap('memory heap', 150 * 1024 * 1024), // 150 MB
       () => this.memory.checkRSS('memory RSS', 150 * 1024 * 1024), // 150 MB
     ]);
- }
+  }
 }

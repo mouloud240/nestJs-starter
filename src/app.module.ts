@@ -13,6 +13,15 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { EmailModule } from './email/email.module';
 import { HealthModule } from './health/health.module';
 import { QueueModule } from './queue/queue.module';
+import { PrismaModule } from './prisma/prisma.module';
+import { PaymentModule } from './payment/payment.module';
+import { SacrificeModule } from './sacrifice/sacrifice.module';
+import { NotificationModule } from './notification/notification.module';
+import { SacrificeVideoModule } from './sacrifice-video/sacrifice-video.module';
+import { SacrificerSacrificesCountModule } from './sacrificer-sacrifices-count/sacrificer-sacrifices-count.module';
+import { DonationModule } from './donation/donation.module';
+import { CloudinaryService } from './cloudinary/cloudinary.service';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 @Module({
   imports: [
     ThrottlerModule.forRoot({
@@ -31,41 +40,22 @@ import { QueueModule } from './queue/queue.module';
       validationSchema: null, // You can define a Joi schema here for validation if needed
       load: [appConfig],
     }),
-    BullModule.forRootAsync({
-      useFactory: (configService: ConfigService) => {
-        const redisHost = configService.get<AppConfig['redis']['host']>(
-          'redis.host',
-          'localhost',
-        );
-        const redisPort = configService.get<AppConfig['redis']['port']>(
-          'redis.port',
-          6379,
-        );
-        const redisUrl = `redis://${redisHost}:${redisPort}`;
-        return {
-          connection: {
-            host: redisHost,
-            port: redisPort,
-            url: redisUrl,
-            db: 3, // Default database
-          },
-        };
-      },
-
-      inject: [ConfigService],
-    }),
-    BullModule.registerQueue(
-      ...Object.values(QUEUE_NAME).map((queueName) => ({
-        name: queueName,
-      })),
-    ),
     AuthenticationModule,
     UserModule,
     EmailModule,
     HealthModule,
     QueueModule,
+    PrismaModule,
+    PaymentModule,
+    SacrificeModule,
+    NotificationModule,
+    SacrificeVideoModule,
+    SacrificerSacrificesCountModule,
+    QueueModule,
+    DonationModule,
+    CloudinaryModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, CloudinaryService],
 })
 export class AppModule {}
