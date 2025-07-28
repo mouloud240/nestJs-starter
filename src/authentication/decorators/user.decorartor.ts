@@ -1,6 +1,6 @@
-import { createParamDecorator, ExecutionContext } from "@nestjs/common";
-import { User } from "src/user/entities/user.entity";
-import { ExtendedRequest } from "../types/extended-req.type";
+import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import { User } from 'src/user/entities/user.entity';
+import { ExtendedRequest } from '../types/extended-req.type';
 
 export const USER = createParamDecorator(
   (data: keyof User | undefined, ctx: ExecutionContext) => {
@@ -17,4 +17,4 @@ export const USER = createParamDecorator(
     // Otherwise, return the entire user object
     return user;
   },
-)
+);

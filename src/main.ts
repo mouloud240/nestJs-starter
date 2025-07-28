@@ -44,18 +44,6 @@ async function bootstrap() {
     }),
   );
 
-  app.use(
-    session({
-      secret: 'my-secret',
-      resave: false,
-      saveUninitialized: false,
-    }),
-  );
-
-  app.use(passport.session());
-
-  app.use(passport.initialize());
-
   const opts: DoubleCsrfConfigOptions = {
     getSecret: () => 'Secret', //TODO:generate a secret
     getSessionIdentifier: (req: ExtendedRequest) => req.user.id.toString(), //TODO:figure this out    cookieName: '__Host-psifi.x-csrf-token', // The name of the cookie to be used, recommend using Host prefix.

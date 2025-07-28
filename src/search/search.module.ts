@@ -3,7 +3,6 @@ import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ElasticsearchModule } from '@nestjs/elasticsearch';
 
-
 import { SearchService } from './search.service';
 
 @Global()
@@ -13,7 +12,7 @@ import { SearchService } from './search.service';
       inject: [ConfigService],
       imports: [ConfigModule],
       useFactory: (ConfigService: ConfigService) => ({
-        node: ConfigService.get('elasticSearch.node'),
+        node: ConfigService.get('elasticSearch.node') ?? 'http://search:9200',
         pingTimeout: ConfigService.get('elasticSearch.timeout'),
         auth: {
           username: ConfigService.get('elasticSearch.auth.username')!,
@@ -27,6 +26,6 @@ import { SearchService } from './search.service';
     }),
   ],
   providers: [SearchService],
-  exports: [SearchService, ElasticsearchModule, BullModule],
+  exports: [SearchService, ElasticsearchModule],
 })
 export class SearchModule {}
