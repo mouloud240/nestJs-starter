@@ -1,0 +1,99 @@
+---
+description: NestJS TypeScript PostgreSQL Project Architecture and Development Guidelines
+globs:
+  - "**/*.ts"
+  - "**/*.js"
+  - "**/*.json"
+alwaysApply: true
+---
+
+# NestJS Project Technical Guidelines
+
+## Tech Stack
+- **NestJS**: Backend framework for efficient, scalable server-side applications
+- **TypeScript**: Superset of JavaScript with static types for enhanced code quality
+- **PostgreSQL**: Powerful, open-source relational database system
+
+## Architecture Overview
+
+### Core Structure
+- `src/app.module.ts`: Root module where all modules are imported and configured
+- `src/main.ts`: Application entry point where NestJS app is created and started
+- `src/app.controller.ts / app.service.ts`: Root controller and service for basic routes
+
+### Module Organization
+
+#### Authentication Module (`src/authentication/`)
+- `decorators/`: Custom decorators for user info extraction and permissions
+- `dtos/`: Data Transfer Objects for authentication data validation
+- `guards/`: Authentication and role-based access guards
+- `strategies/`: Passport strategies (JWT, OAuth, etc.)
+- `types/`: Authentication-related types and interfaces
+- `authentication.controller.ts`: Authentication routes handler
+- `authentication.service.ts`: Authentication business logic
+- `authentication.module.ts`: Authentication module bundle
+
+#### User Module (`src/user/`)
+- `dto/`: User-related DTOs
+- `entities/`: User entity definitions for database
+- `user.service.ts`: User business logic
+- `user.controller.ts`: User HTTP controllers
+- `user.module.ts`: User features module
+
+#### Feature Modules (`src/Feature/`)
+- `dto/`: Data validation and transformation DTOs
+- `entities/`: Database table entity representations
+- `services/`: Business logic and repository interactions
+- `controllers/`: HTTP request/response handlers
+- `gateways/`: WebSocket gateways for real-time communication
+
+#### Common Module (`src/common/`)
+- `constants/`: Application-wide constants (jobs.ts, queues.ts)
+- `utils/`: Helper functions organized by domain (authentication/, webSocket/)
+- `decorators/`: Custom validation, logging, data extraction decorators
+- `filters/`: Global exception filters for error handling
+- `guards/`: Global authentication and authorization guards
+- `interceptors/`: Request/response logging, transformation, modification
+- `pipes/`: Data transformation and validation pipes
+
+#### Configuration (`src/config/`)
+- `app.config.ts`: Configuration settings loader from .env
+- `interfaces/`: Configuration interfaces (app-config.interfaces.ts)
+
+#### Redis Integration (`src/redis/`)
+- `redis.module.ts`: Redis module configuration
+- `redis.service.ts`: Redis client logic and helpers
+
+## Development Guidelines
+
+### Code Standards
+- Use TypeScript features: interfaces, types, decorators
+- Follow NestJS module structure and dependency injection patterns
+- Use snake_case for service names
+- Implement proper error handling and validation
+- Use DTOs for all data transfer operations
+
+### Documentation Requirements
+- Document all methods using JSDoc comments
+- Include parameter explanations and examples
+- Provide method descriptions and return types
+- Document module overviews and folder structures
+
+### Change Logging
+- Log all AI-generated changes to `ai_logs/<today_date_utc>.md`
+- Include: prompt text, git author name, main file changes, highlights, line constraints
+- Essential for debugging and tracking changes
+
+### Best Practices
+- Write clean, maintainable code
+- Use meaningful variable names
+- Follow project coding standards
+- Leverage TypeScript static typing
+- Implement proper separation of concerns
+- Use dependency injection appropriately
+
+### File Organization
+- Keep related functionality in appropriate modules
+- Use consistent naming conventions
+- Organize imports logically
+- Maintain clear folder structure hierarchy
