@@ -245,6 +245,7 @@ MIT © 2025 Mouloud Hasrane
 ## 🤝 Contributing
 
 Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to contribute to this project.
+**ps**: this folder will also include commits practices docuemnted here [COMMIT.md](COMMIT.md)
 
 ## 🧑‍💻 Author
 
