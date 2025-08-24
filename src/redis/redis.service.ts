@@ -1,44 +1,103 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Redis from 'ioredis';
 import { AppConfig } from 'src/config/interfaces/app-config.interface';
+import { RedisClient, RedisClientType } from './types/redis-cache.type';
 
 @Injectable()
-export class RedisService {
+export class RedisService implements OnModuleInit {
   logger = new Logger(RedisService.name);
-  private readonly redisClient: Redis;
+  private readonly persistentClient: Redis;
+  private readonly cachedClient: Redis;
   private readonly subscriberClient: Redis;
-  constructor(private readonly configService: ConfigService) {
-    const redisHost =
-      this.configService.get<AppConfig['redis']['host']>('redis.host')!;
-    const redisPort =
-      this.configService.get<AppConfig['redis']['port']>('redis.port');
-    const redisUrl = 'redis://' + redisHost + ':' + redisPort;
-    this.redisClient = new Redis(redisUrl);
-    this.subscriberClient = new Redis(redisUrl);
-    this.redisClient
+
+  constructor(private readonly configService: ConfigService<AppConfig, true>) {
+    const redisHost = this.configService.get('redis.host', { infer: true });
+    const redisPort = this.configService.get('redis.port', { infer: true });
+    const persistentDb = this.configService.get('redis.persistentDb', {
+      infer: true,
+    });
+    const cachedDb = this.configService.get('redis.cachedDb', { infer: true });
+
+    this.persistentClient = new Redis({
+      host: redisHost,
+      port: redisPort,
+      db: persistentDb,
+    });
+    this.cachedClient = new Redis({
+      host: redisHost,
+      port: redisPort,
+      db: cachedDb,
+    });
+    this.subscriberClient = new Redis({ host: redisHost, port: redisPort });
+
+    this.persistentClient
       .hello()
-      .then(() => this.logger.log('Redis is Connected'))
+      .then(() => this.logger.log('Persistent Redis is Connected'))
       .catch((e) => {
-        this.logger.log(e);
+        this.logger.error('Error connecting to persistent Redis', e);
+      });
+    this.cachedClient
+      .ping()
+      .then(() => this.logger.log('Cached Redis is Connected'))
+      .catch((e) => {
+        this.logger.error('Error connecting to cached Redis', e);
       });
   }
+  async onModuleInit() {
+    this.logger.log('Flushing cached Redis database');
+    await this.cachedClient.flushdb();
+  }
 
-  async set<T>(key: string, value: T, ttl: number): Promise<void> {
-    await this.redisClient.set(key, JSON.stringify(value), 'EX', ttl);
+  private getClient(clientType: RedisClient): Redis {
+    return clientType === RedisClientType.PERSISTENT
+      ? this.persistentClient
+      : this.cachedClient;
   }
-  async rPush<T>(key: string, value: T): Promise<void> {
-    await this.redisClient.rpush(key, JSON.stringify(value));
+
+  async set<T>(
+    key: string,
+    value: T,
+    ttl?: number,
+    clientType: RedisClient = RedisClientType.CACHED,
+  ): Promise<void> {
+    if (ttl) {
+      await this.getClient(clientType).set(
+        key,
+        JSON.stringify(value),
+        'EX',
+        ttl,
+      );
+    } else {
+      await this.getClient(clientType).set(key, JSON.stringify(value));
+    }
   }
-  async lPush<T>(key: string, value: T): Promise<void> {
-    await this.redisClient.lpush(key, JSON.stringify(value));
+  async rPush<T>(
+    key: string,
+    value: T,
+    clientType: RedisClient = RedisClientType.CACHED,
+  ): Promise<void> {
+    await this.getClient(clientType).rpush(key, JSON.stringify(value));
   }
-  async lPop<T>(key: string): Promise<T | null> {
-    const data = await this.redisClient.lpop(key);
+  async lPush<T>(
+    key: string,
+    value: T,
+    clientType: RedisClient = RedisClientType.CACHED,
+  ): Promise<void> {
+    await this.getClient(clientType).lpush(key, JSON.stringify(value));
+  }
+  async lPop<T>(
+    key: string,
+    clientType: RedisClient = RedisClientType.CACHED,
+  ): Promise<T | null> {
+    const data = await this.getClient(clientType).lpop(key);
     return data ? (JSON.parse(data) as T) : null;
   }
-  async rPop<T>(key: string): Promise<T | null> {
-    const data = await this.redisClient.rpop(key);
+  async rPop<T>(
+    key: string,
+    clientType: RedisClient = RedisClientType.CACHED,
+  ): Promise<T | null> {
+    const data = await this.getClient(clientType).rpop(key);
     return data ? (JSON.parse(data) as T) : null;
   }
   async subscribe(
@@ -54,104 +113,158 @@ export class RedisService {
     });
   }
   //TODO:same for this
-  async publish(channel: string, message: string) {
-    await this.redisClient.publish(channel, message);
+  async publish(
+    channel: string,
+    message: string,
+    clientType: RedisClient = RedisClientType.CACHED,
+  ) {
+    await this.getClient(clientType).publish(channel, message);
   }
   async getRange<T>(
     key: string,
     start: number = 0,
     end: number = -1,
+    clientType: RedisClient = RedisClientType.CACHED,
   ): Promise<Array<T>> {
-    const data = await this.redisClient.lrange(key, start, end);
+    const data = await this.getClient(clientType).lrange(key, start, end);
     return data.map((d) => JSON.parse(d) as T);
   }
 
-  async get<T>(key: string): Promise<T | null> {
-    const data = await this.redisClient.get(key);
+  async get<T>(
+    key: string,
+    clientType: RedisClient = RedisClientType.CACHED,
+  ): Promise<T | null> {
+    const data = await this.getClient(clientType).get(key);
     return data ? (JSON.parse(data) as T) : null;
   }
 
-  async getMany<T>(key: string): Promise<Array<T>> {
-    const data = await this.redisClient.get(key);
+  async getMany<T>(
+    key: string,
+    clientType: RedisClient = RedisClientType.CACHED,
+  ): Promise<Array<T>> {
+    const data = await this.getClient(clientType).get(key);
     return data ? (JSON.parse(data) as Array<T>) : [];
   }
 
-  async del(key: string): Promise<void> {
-    await this.redisClient.del(key);
+  async del(
+    key: string,
+    clientType: RedisClient = RedisClientType.CACHED,
+  ): Promise<void> {
+    await this.getClient(clientType).del(key);
   }
-  async ttl(key: string): Promise<number> {
-    return this.redisClient.ttl(key);
-  }
-
-  async sAdd(key: string, value: string): Promise<number> {
-    return this.redisClient.sadd(key, value);
-  }
-
-  async sIsMember(key: string, value: string): Promise<number> {
-    return this.redisClient.sismember(key, value);
+  async ttl(
+    key: string,
+    clientType: RedisClient = RedisClientType.CACHED,
+  ): Promise<number> {
+    return this.getClient(clientType).ttl(key);
   }
 
-  async sMembers(key: string): Promise<string[]> {
-    return this.redisClient.smembers(key);
+  async sAdd(
+    key: string,
+    value: string,
+    clientType: RedisClient = RedisClientType.CACHED,
+  ): Promise<number> {
+    return this.getClient(clientType).sadd(key, value);
+  }
+
+  async sIsMember(
+    key: string,
+    value: string,
+    clientType: RedisClient = RedisClientType.CACHED,
+  ): Promise<number> {
+    return this.getClient(clientType).sismember(key, value);
+  }
+
+  async sMembers(
+    key: string,
+    clientType: RedisClient = RedisClientType.CACHED,
+  ): Promise<string[]> {
+    return this.getClient(clientType).smembers(key);
   }
 
   async hIncrBy(
     key: string,
     field: string,
     increment: number = 1,
+    clientType: RedisClient = RedisClientType.CACHED,
   ): Promise<number> {
-    return this.redisClient.hincrby(key, field, increment);
+    return this.getClient(clientType).hincrby(key, field, increment);
   }
 
   async hSet(
     key: string,
     field: string,
     value: string | number,
+    clientType: RedisClient = RedisClientType.CACHED,
   ): Promise<number> {
-    return this.redisClient.hset(key, field, value.toString());
+    return this.getClient(clientType).hset(key, field, value.toString());
   }
 
-  async hGetAll(key: string): Promise<Record<string, string>> {
-    return this.redisClient.hgetall(key);
+  async hGetAll(
+    key: string,
+    clientType: RedisClient = RedisClientType.CACHED,
+  ): Promise<Record<string, string>> {
+    return this.getClient(clientType).hgetall(key);
   }
 
-  async hDel(key: string, ...fields: string[]): Promise<number> {
-    return this.redisClient.hdel(key, ...fields);
+  async hDel(
+    key: string,
+    clientType: RedisClient = RedisClientType.CACHED,
+    ...fields: string[]
+  ): Promise<number> {
+    return this.getClient(clientType).hdel(key, ...fields);
   }
 
-  async sRem(key: string, ...members: string[]): Promise<number> {
-    return this.redisClient.srem(key, ...members);
+  async sRem(
+    key: string,
+    clientType: RedisClient = RedisClientType.CACHED,
+    ...members: string[]
+  ): Promise<number> {
+    return this.getClient(clientType).srem(key, ...members);
   }
 
-  async zRem(key: string, ...members: string[]): Promise<number> {
-    return this.redisClient.zrem(key, ...members);
+  async zRem(
+    key: string,
+    clientType: RedisClient = RedisClientType.CACHED,
+    ...members: string[]
+  ): Promise<number> {
+    return this.getClient(clientType).zrem(key, ...members);
   }
 
-  async hGet(key: string, field: string): Promise<string | null> {
-    return this.redisClient.hget(key, field);
+  async hGet(
+    key: string,
+    field: string,
+    clientType: RedisClient = RedisClientType.CACHED,
+  ): Promise<string | null> {
+    return this.getClient(clientType).hget(key, field);
   }
 
-  async sCard(key: string): Promise<number> {
-    return this.redisClient.scard(key);
+  async sCard(
+    key: string,
+    clientType: RedisClient = RedisClientType.CACHED,
+  ): Promise<number> {
+    return this.getClient(clientType).scard(key);
   }
 
   async zAdd(
     key: string,
     members: Array<{ score: number; value: string }>,
+    clientType: RedisClient = RedisClientType.CACHED,
   ): Promise<number> {
     const args: (string | number)[] = [];
     members.forEach((member) => {
       args.push(member.score, member.value);
     });
-    return this.redisClient.zadd(key, ...args);
+    return this.getClient(clientType).zadd(key, ...args);
   }
 
   async zRevRangeWithScores(
     key: string,
     start: number,
     stop: number,
+    clientType: RedisClient = RedisClientType.CACHED,
   ): Promise<Array<{ score: number; value: string }>> {
-    const result = await this.redisClient.zrevrange(
+    const result = await this.getClient(clientType).zrevrange(
       key,
       start,
       stop,
@@ -174,13 +287,17 @@ export class RedisService {
    * @param pattern The pattern to match keys against (e.g., "user:*:profile")
    * @returns Number of keys deleted
    */
-  async deleteByPattern(pattern: string): Promise<number> {
+  async deleteByPattern(
+    pattern: string,
+    clientType: RedisClient = RedisClientType.CACHED,
+  ): Promise<number> {
     let cursor = '0';
     let deleteCount = 0;
+    const client = this.getClient(clientType);
 
     do {
       // Scan for keys matching the pattern
-      const [nextCursor, keys] = await this.redisClient.scan(
+      const [nextCursor, keys] = await client.scan(
         cursor,
         'MATCH',
         pattern,
@@ -192,7 +309,7 @@ export class RedisService {
 
       // Delete found keys if any
       if (keys.length > 0) {
-        const deletedCount = await this.redisClient.del(...keys);
+        const deletedCount = await client.del(...keys);
         deleteCount += deletedCount;
       }
     } while (cursor !== '0'); // Continue until cursor returns to 0
@@ -208,12 +325,16 @@ export class RedisService {
    * @param pattern The pattern to match keys against (e.g., "user:*:profile")
    * @returns True if any key matches the pattern, false otherwise
    */
-  async existsByPattern(pattern: string): Promise<boolean> {
+  async existsByPattern(
+    pattern: string,
+    clientType: RedisClient = RedisClientType.CACHED,
+  ): Promise<boolean> {
     let cursor = '0';
+    const client = this.getClient(clientType);
 
     do {
       // Scan for keys matching the pattern
-      const [nextCursor, keys] = await this.redisClient.scan(
+      const [nextCursor, keys] = await client.scan(
         cursor,
         'MATCH',
         pattern,
@@ -239,13 +360,16 @@ export class RedisService {
    * @param pattern The pattern to match keys against (e.g., "user:*:profile")
    * @returns Array of parsed values from matching keys
    */
-  async getByPattern<T>(pattern: string): Promise<T[]> {
+  async getByPattern<T>(
+    pattern: string,
+    clientType: RedisClient = RedisClientType.CACHED,
+  ): Promise<T[]> {
     let cursor = '0';
     const results: Array<T> = [];
-
+    const client = this.getClient(clientType);
     do {
       // Scan for keys matching the pattern
-      const [nextCursor, keys] = await this.redisClient.scan(
+      const [nextCursor, keys] = await client.scan(
         cursor,
         'MATCH',
         pattern,
@@ -257,7 +381,7 @@ export class RedisService {
 
       // Get values for found keys
       if (keys.length > 0) {
-        const values = await this.redisClient.mget(...keys);
+        const values = await client.mget(...keys);
 
         // Parse and add non-null values to results
         for (const value of values) {

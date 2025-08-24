@@ -4,6 +4,8 @@ export default (): AppConfig => ({
   redis: {
     host: process.env.REDIS_HOST || 'localhost',
     port: parseInt(process.env.REDIS_PORT!, 10) || 6379,
+    persistentDb: parseInt(process.env.REDIS_PERSISTENT_DB!, 10) || 1,
+    cachedDb: parseInt(process.env.REDIS_CACHED_DB!, 10) || 2,
   },
   mail: {
     port: parseInt(process.env.MAIL_PORT!, 10) || 587,

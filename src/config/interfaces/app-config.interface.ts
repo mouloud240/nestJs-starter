@@ -5,6 +5,8 @@ export interface AppConfig {
   redis: {
     host: string;
     port: number;
+    persistentDb: number;
+    cachedDb: number;
   };
   mail: MailConfig;
   auth: AuthConfig;

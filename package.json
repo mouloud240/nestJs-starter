@@ -43,6 +43,7 @@
     "bullmq": "^5.53.3",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
+    "cloudinary": "^2.7.0",
     "csrf-csrf": "^4.0.3",
     "express-session": "^1.18.1",
     "helmet": "^8.1.0",
