@@ -49,8 +49,9 @@ export class RedisHealthIndicator extends HealthIndicator {
           timeout,
         );
         // Avoid keeping the event loop alive in tests/CI
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (timer as any)?.unref?.();
+        if (typeof timer?.unref === 'function') {
+          timer.unref();
+        }
       });
 
       // Race between ping and timeout
@@ -119,9 +120,6 @@ export class RedisHealthIndicator extends HealthIndicator {
     }
   }
 
-  /**
-   * Gets current Redis connection state for debugging
-   */
   // Connection state handled via redisService.getConnectionState
 
   /**
