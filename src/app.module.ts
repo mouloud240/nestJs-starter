@@ -5,6 +5,8 @@ import { AppService } from './app.service';
 import { BullModule } from '@nestjs/bullmq';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import appConfig from './config/app.config';
+import cloudinaryConfig from './config/cloudinary.config';
+import elasticsearchConfig from './config/elasticsearch.config';
 import { AppConfig } from './config/interfaces/app-config.interface';
 import { QUEUE_NAME } from './common/constants/queues';
 import { AuthenticationModule } from './authentication/authentication.module';
@@ -29,7 +31,7 @@ import { QueueModule } from './queue/queue.module';
     ConfigModule.forRoot({
       isGlobal: true, // Makes the configuration available globally
       validationSchema: null, // You can define a Joi schema here for validation if needed
-      load: [appConfig],
+      load: [appConfig, cloudinaryConfig, elasticsearchConfig],
     }),
     BullModule.forRootAsync({
       useFactory: (configService: ConfigService) => {

@@ -1,11 +1,16 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  OnModuleDestroy,
+  OnModuleInit,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Redis from 'ioredis';
 import { AppConfig } from 'src/config/interfaces/app-config.interface';
 import { RedisClient, RedisClientType } from './types/redis-cache.type';
 
 @Injectable()
-export class RedisService implements OnModuleInit {
+export class RedisService implements OnModuleInit, OnModuleDestroy {
   logger = new Logger(RedisService.name);
   private readonly persistentClient: Redis;
   private readonly cachedClient: Redis;
@@ -49,10 +54,50 @@ export class RedisService implements OnModuleInit {
     await this.cachedClient.flushdb();
   }
 
+  async onModuleDestroy() {
+    this.logger.log('Closing Redis connections');
+    try {
+      await Promise.allSettled([
+        this.persistentClient.quit(),
+        this.cachedClient.quit(),
+        this.subscriberClient.quit(),
+      ]);
+    } catch (e) {
+      this.logger.error('Error while closing Redis clients', e);
+    }
+  }
+
   private getClient(clientType: RedisClient): Redis {
     return clientType === RedisClientType.PERSISTENT
       ? this.persistentClient
       : this.cachedClient;
+  }
+
+  /**
+   * Lightweight ping to verify connectivity
+   */
+  async ping(
+    clientType: RedisClient = RedisClientType.CACHED,
+  ): Promise<string> {
+    return this.getClient(clientType).ping();
+  }
+
+  /**
+   * Fetch INFO section from Redis
+   */
+  async info(
+    section?: 'server' | 'memory',
+    clientType: RedisClient = RedisClientType.CACHED,
+  ): Promise<string> {
+    if (section) return this.getClient(clientType).info(section);
+    return this.getClient(clientType).info();
+  }
+
+  /**
+   * Get current connection state string
+   */
+  getConnectionState(clientType: RedisClient = RedisClientType.CACHED): string {
+    return this.getClient(clientType).status;
   }
 
   async set<T>(

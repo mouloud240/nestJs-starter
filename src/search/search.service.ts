@@ -2,12 +2,13 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  OnModuleDestroy,
   OnModuleInit,
 } from '@nestjs/common';
 import { ElasticsearchService } from '@nestjs/elasticsearch';
 
 @Injectable()
-export class SearchService implements OnModuleInit {
+export class SearchService implements OnModuleInit, OnModuleDestroy {
   logger = new Logger('SearchService');
   constructor(private readonly elasticSearchService: ElasticsearchService) {}
   onModuleInit() {
@@ -19,8 +20,23 @@ export class SearchService implements OnModuleInit {
       .catch((e) => {
         this.logger.error('Elasticsearch is down');
         this.logger.error(e);
-        throw new InternalServerErrorException();
+        // Do not crash the app on startup if ES is down; operations will error lazily
       });
+  }
+  async onModuleDestroy() {
+    try {
+      // @nestjs/elasticsearch uses @elastic/elasticsearch under the hood
+      // Close transport to free sockets
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const anyClient = this.elasticSearchService as any;
+      if (anyClient?.close) {
+        await anyClient.close();
+      } else if (anyClient?.transport?.close) {
+        await anyClient.transport.close();
+      }
+    } catch (e) {
+      this.logger.error('Error while closing Elasticsearch client', e);
+    }
   }
   //TODO:add type to the query
   async search<T>(index: string, query: any) {

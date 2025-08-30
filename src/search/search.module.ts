@@ -3,7 +3,6 @@ import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ElasticsearchModule } from '@nestjs/elasticsearch';
 
-
 import { SearchService } from './search.service';
 
 @Global()
@@ -27,6 +26,6 @@ import { SearchService } from './search.service';
     }),
   ],
   providers: [SearchService],
-  exports: [SearchService, ElasticsearchModule, BullModule],
+  exports: [SearchService, ElasticsearchModule],
 })
 export class SearchModule {}
