@@ -15,6 +15,11 @@ export default (): AppConfig => ({
       user: process.env.MAIL_USER!,
       pass: process.env.MAIL_PASS!,
     },
+    from: process.env.MAIL_FROM,
+    tls: {
+      rejectUnauthorized:
+        process.env.MAIL_TLS_REJECT_UNAUTHORIZED === 'true' ? true : undefined,
+    },
   },
 
   auth: {

@@ -10,68 +10,67 @@ This project is currently in active development. Most features should be done in
 
 ## 📖 Table of Contents
 
-* [🚀 Features](#-features)
-* [📂 Folder Structure](#-folder-structure)
-* [🛠️ Setup & Run](#-setup--run)
-* [🧪 Scripts](#-scripts)
-* [📖 API Documentation](#-api-documentation)
-* [📬 Mailer Setup](#-mailer-setup)
-* [⚙️ Background Jobs](#-background-jobs)
-* [🧠 Redis Usage](#-redis-usage)
-* [🌐 WebSockets](#-websockets)
-* [🔒 Security](#-security)
-* [❤️ Health Checks](#-health-checks)
-* [🐳 Docker Compose](#-docker-compose)
-* [🚄 Fastify Support](#-fastify-support)
-* [📦 License](#-license)
-* [🤝 Contributing](#-contributing)
-* [🧑‍💻 Author](#-author)
-* [📬 Contact](#-contact)
+- [🚀 Features](#-features)
+- [📂 Folder Structure](#-folder-structure)
+- [🛠️ Setup & Run](#-setup--run)
+- [🧪 Scripts](#-scripts)
+- [📖 API Documentation](#-api-documentation)
+- [📬 Mailer Setup](#-mailer-setup)
+- [⚙️ Background Jobs](#-background-jobs)
+- [🧠 Redis Usage](#-redis-usage)
+- [🌐 WebSockets](#-websockets)
+- [🔒 Security](#-security)
+- [❤️ Health Checks](#-health-checks)
+- [🐳 Docker Compose](#-docker-compose)
+- [🚄 Fastify Support](#-fastify-support)
+- [📦 License](#-license)
+- [🤝 Contributing](#-contributing)
+- [🧑‍💻 Author](#-author)
+- [📬 Contact](#-contact)
 
 ## 🚀 Features
 
-* ✅ **Modular Configuration**: Centralized config management via `.env` and `ConfigModule`.
-* 🔐 **Authentication System**:
+- ✅ **Modular Configuration**: Centralized config management via `.env` and `ConfigModule`.
+- 🔐 **Authentication System**:
+  - Passport.js integration
+  - Built-in **JWT strategy**
+  - Easily extendable to add OAuth, local, etc.
 
-  * Passport.js integration
-  * Built-in **JWT strategy**
-  * Easily extendable to add OAuth, local, etc.
-* 📦 **Elasticsearch**: Seamless integration for full-text search and analytics use-cases.
-* 🧰 **Utility Functions**: Common helper functions to keep your code DRY and clean.
-* 🧠 **Redis Integration** (via `ioredis`):
+- 📦 **Elasticsearch**: Seamless integration for full-text search and analytics use-cases.
+- 🧰 **Utility Functions**: Common helper functions to keep your code DRY and clean.
+- 🧠 **Redis Integration** (via `ioredis`):
+  - Caching layer
+  - Pub/Sub support
+  - Redis Streams support for message/event queues
 
-  * Caching layer
-  * Pub/Sub support
-  * Redis Streams support for message/event queues
-* 🌐 **WebSocket Manager**:
+- 🌐 **WebSocket Manager**:
+  - Centralized gateway
+  - **Redis adapter** for horizontal scaling
+  - User connections registered for **1-to-1 messaging**
 
-  * Centralized gateway
-  * **Redis adapter** for horizontal scaling
-  * User connections registered for **1-to-1 messaging**
-* 📬 **Mailing Module**: Easily plug in mailing services like SendGrid, Mailgun, or SMTP.
-* 🛡️ **Security**:
+- 📬 **Mailing Module**: Easily plug in mailing services like SendGrid, Mailgun, or SMTP.
+- 🛡️ **Security**:
+  - CSRF protection (double-submit cookie strategy)
+  - Secure headers via `Helmet`
+  - **Rate Limiting** with `@nestjs/throttler`
 
-  * CSRF protection (double-submit cookie strategy)
-  * Secure headers via `Helmet`
-  * **Rate Limiting** with `@nestjs/throttler`
-* 📚 **API Documentation**:
+- 📚 **API Documentation**:
+  - Swagger auto-generated docs
+  - Beautiful UI powered by **Scalar**
 
-  * Swagger auto-generated docs
-  * Beautiful UI powered by **Scalar**
-* 🎯 **Background Jobs**:
+- 🎯 **Background Jobs**:
+  - Bull Module with Redis backend
+  - For tasks like email queues, notifications, etc.
 
-  * Bull Module with Redis backend
-  * For tasks like email queues, notifications, etc.
-* 🔁 **Health Checks**:
+- 🔁 **Health Checks**:
+  - Exposed endpoint for service health & readiness using `@nestjs/terminus`
 
-  * Exposed endpoint for service health & readiness using `@nestjs/terminus`
-* 📦 **Docker Compose Ready**:
+- 📦 **Docker Compose Ready**:
+  - Includes services like Redis, Elasticsearch, and more
 
-  * Includes services like Redis, Elasticsearch, and more
-* 📑 **Request & Response Logging**:
-
-  * Custom **interceptors** log HTTP traffic
-  * Extendable for audit logging or debugging
+- 📑 **Request & Response Logging**:
+  - Custom **interceptors** log HTTP traffic
+  - Extendable for audit logging or debugging
 
 ---
 
@@ -181,10 +180,10 @@ Jobs are processed using **Bull** and stored in Redis. Define jobs under `common
 
 You can use Redis for:
 
-* Caching
-* Pub/Sub (real-time messaging)
-* Redis Streams (event queues)
-* WebSocket scaling
+- Caching
+- Pub/Sub (real-time messaging)
+- Redis Streams (event queues)
+- WebSocket scaling
 
 Configured in `redis/` module.
 
@@ -200,17 +199,52 @@ Supports **single-user messaging** and **distributed WebSocket server** setup us
 
 This starter includes:
 
-* Helmet for HTTP header protection
-* Double CSRF strategy using cookie and token
-* Rate limiting using `@nestjs/throttler`
-
----
+- Helmet for HTTP header protection
+- Double CSRF strategy using cookie and token
+- Rate limiting using `@nestjs/throttler`
 
 ## ❤️ Health Checks
 
-* Powered by `@nestjs/terminus`
-* Endpoint: `/health`
-* Checks Redis, Elasticsearch, Database, etc.
+Powered by `@nestjs/terminus` with split endpoints for liveness and readiness.
+
+### Endpoints
+
+- `GET /health/liveness` — Fast, internal-only check that confirms the service is running. Avoids external dependencies.
+- `GET /health/readiness` — Verifies required dependencies (Redis, Elasticsearch, Database) and resource guards (memory/disk). Returns 503 if any required check fails.
+
+### Included Checks
+
+- **Liveness**: Static service indicator (no outbound calls)
+- **Readiness**: Redis ping, Elasticsearch ping, Database ping, memory heap/RSS thresholds, disk space threshold
+
+### Kubernetes/ECS Probes
+
+- **Liveness**: `path: /health/liveness`, low cost and frequent; failure triggers restart
+- **Readiness**: `path: /health/readiness`, controls traffic routing; failing removes pod from Service endpoints
+
+### Example Kubernetes Configuration
+
+```yaml
+livenessProbe:
+  httpGet:
+    path: /health/liveness
+    port: 3000
+  periodSeconds: 10
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /health/readiness
+    port: 3000
+  initialDelaySeconds: 10
+  periodSeconds: 15
+  failureThreshold: 2
+```
+
+### Notes
+
+- Keep liveness "dumb" and fast; do not call external services to avoid cascading restarts
+- Readiness should reflect real serving ability by checking required dependencies and resource limits; tune thresholds per environment
 
 ---
 
@@ -218,9 +252,9 @@ This starter includes:
 
 Use `docker-compose.yml` to spin up:
 
-* Redis
-* Elasticsearch
-* (Add other services like Postgres, Mailhog, etc.)
+- Redis
+- Elasticsearch
+- (Add other services like Postgres, Mailhog, etc.)
 
 ---
 
@@ -232,9 +266,9 @@ This project includes a `fastify` branch which provides the same feature set usi
 
 Refer to [`CHOOSE.md`](CHOOSE.md) to decide whether to use the default (Express) or Fastify branch. It outlines:
 
-* Pros and cons of each adapter
-* Performance and ecosystem differences
-* Compatibility notes
+- Pros and cons of each adapter
+- Performance and ecosystem differences
+- Compatibility notes
 
 ---
 
