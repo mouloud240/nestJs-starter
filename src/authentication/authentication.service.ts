@@ -1,13 +1,10 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { result } from 'src/common/utils/result.util';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { compareHash } from 'src/common/utils/authentication/bcrypt.utils';
-import { err } from 'src/common/utils/result.util';
 import { User } from 'src/user/entities/user.entity';
 import { UserService } from 'src/user/user.service';
 import { AuthResponseDto } from './dtos/responses/auth-response.dto';
 import { registerDto } from './dtos/requests/register.dto';
 import { JwtService } from '@nestjs/jwt';
-import { ok } from '../common/utils/result.util';
 import { ConfigService } from '@nestjs/config';
 import { AppConfig } from 'src/config/interfaces/app-config.interface';
 
@@ -19,21 +16,18 @@ export class AuthenticationService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
-  async validateUser(
-    email: string,
-    password: string,
-  ): Promise<result<User, string>> {
+  async validateUser(email: string, password: string): Promise<User> {
     const user = await this.userService.findByEmail(email);
     if (!user) {
-      return err('User not found');
+      throw new UnauthorizedException('User not found');
     }
     const isPasswordValid = await compareHash(password, user.password);
     if (!isPasswordValid) {
-      return err('Invalid password');
+      throw new UnauthorizedException('Invalid password');
     }
-    return { ok: true, value: user };
+    return user;
   }
-  async issueTokens(user: User): Promise<result<AuthResponseDto, string>> {
+  async issueTokens(user: User): Promise<AuthResponseDto> {
     try {
       const { id, email } = user;
       const accessTokenPayload = { sub: id, email };
@@ -54,32 +48,22 @@ export class AuthenticationService {
       ]);
 
       return {
-        ok: true,
-        value: {
-          //TODO : add jwt token generation logic here
-          accessToken, // Replace with actual token generation logic
-          refreshToken, // Replace with actual token generation logic
-          user: user,
-        },
+        accessToken,
+        refreshToken,
+        user: user,
       };
     } catch (error) {
       this.logger.error('Error issuing tokens', error);
-      return err('Failed to issue tokens');
+      throw new Error('Failed to issue tokens');
     }
   }
   async registerUser(data: registerDto) {
     const user = await this.userService.createUser(data);
-    if (user.ok === false) {
-      return err(user.error);
-    }
-    const tokens = await this.issueTokens(user.value);
-    if (!tokens.ok) {
-      return err('Failed to issue tokens');
-    }
-    return ok({
-      accessToken: tokens.value.accessToken,
-      refreshToken: tokens.value.refreshToken,
-      user: user.value,
-    });
+    const tokens = await this.issueTokens(user);
+    return {
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+      user: user,
+    };
   }
 }
