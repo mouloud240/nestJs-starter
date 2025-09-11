@@ -1,5 +1,6 @@
 import { registerAs } from '@nestjs/config';
 import { MailConfig } from './interfaces/mail-config.inteface';
+import { join } from 'path';
 
 export default registerAs(
   'mail',
@@ -11,6 +12,12 @@ export default registerAs(
       user: process.env.MAIL_USER!,
       pass: process.env.MAIL_PASS!,
     },
+    template: {
+      dir: join(__dirname, '../email/templates'),
+      adapter: new (require('handlebars').Adapter)(),
+      options: {
+        strict: true,
+      },
+    },
   }),
 );
-

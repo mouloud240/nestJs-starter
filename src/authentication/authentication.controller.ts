@@ -19,8 +19,7 @@ export class AuthenticationController {
   })
   @ApiOkResponse({
     description: 'Returns the access token, refresh token, and user details.',
-    type: () => AuthResponseDto, 
-    
+    type: () => AuthResponseDto,
   })
   @ApiResponse({
     status: 401,
@@ -28,9 +27,10 @@ export class AuthenticationController {
   })
   @ApiResponse({
     status: 400,
-    description: 'Bad Request. The request body is invalid or missing required fields.',
+    description:
+      'Bad Request. The request body is invalid or missing required fields.',
   })
-  async login(@USER() user:User) {
+  async login(@USER() user: User) {
     return this.authenticationService.issueTokens(user);
   }
   @ApiOperation({
@@ -43,17 +43,19 @@ export class AuthenticationController {
   })
   @ApiResponse({
     status: 400,
-    description: 'Bad Request. The request body is invalid or missing required fields.',
+    description:
+      'Bad Request. The request body is invalid or missing required fields.',
   })
   @Post('register')
-  async register(@Body() data:registerDto) {
+  async register(@Body() data: registerDto) {
     return this.authenticationService.registerUser(data);
   }
   @UseGuards(RefreshTokenGuard)
   @Post('refresh')
   @ApiOperation({
     summary: 'Refresh tokens',
-    description: 'Refreshes access and refresh tokens using a valid refresh token.',
+    description:
+      'Refreshes access and refresh tokens using a valid refresh token.',
   })
   @ApiOkResponse({
     description: 'Returns the new access token and refresh token.',
@@ -65,5 +67,74 @@ export class AuthenticationController {
   })
   async refreshTokens(@USER() user: User) {
     return this.authenticationService.issueTokens(user);
+  }
+
+  @Post('resend-verification')
+  @ApiOperation({
+    summary: 'Resend verification email',
+    description: 'Resends the verification email to the user.',
+  })
+  @ApiOkResponse({
+    description: 'Returns a message indicating that the email has been sent.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'User not found.',
+  })
+  async resendVerification(@Body('email') email: string) {
+    return this.authenticationService.resendVerificationCode(email);
+  }
+
+  @Post('verify-email')
+  @ApiOperation({
+    summary: 'Verify email',
+    description: "Verifies the user's email with the provided code.",
+  })
+  @ApiOkResponse({
+    description:
+      'Returns a message indicating that the email has been verified.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid verification code.',
+  })
+  async verifyEmail(@Body('email') email: string, @Body('code') code: string) {
+    return this.authenticationService.verifyEmail(email, code);
+  }
+
+  @Post('forgot-password')
+  @ApiOperation({
+    summary: 'Forgot password',
+    description: 'Sends a password reset email to the user.',
+  })
+  @ApiOkResponse({
+    description: 'Returns a message indicating that the email has been sent.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'User not found.',
+  })
+  async forgotPassword(@Body('email') email: string) {
+    return this.authenticationService.forgotPassword(email);
+  }
+
+  @Post('reset-password')
+  @ApiOperation({
+    summary: 'Reset password',
+    description: "Resets the user's password with the provided token.",
+  })
+  @ApiOkResponse({
+    description:
+      'Returns a message indicating that the password has been reset.',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid reset token.',
+  })
+  async resetPassword(
+    @Body('token') token: string,
+    @Body('password') password: string,
+  ) {
+    return this.authenticationService.resetPassword(token, password);
   }
 }
