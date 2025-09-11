@@ -18,10 +18,6 @@ export class LocalStrategy extends PassportStrategy(Strategy, 'local') {
       email,
       password,
     );
-    if (result.ok) {
-      return result.value; // Return the user object if validation is successful
-    } else {
-      throw new UnauthorizedException(result.error); // Throw an error if validation fails
-    }
+    return result;
   }
 }

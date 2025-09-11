@@ -1,4 +1,6 @@
-export interface MailConfig {
+import { MailerOptions } from '@nestjs-modules/mailer';
+
+export interface MailConfig extends MailerOptions {
   host: string;
   port: number;
   secure: boolean; // true for 465, false for other ports

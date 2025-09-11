@@ -6,7 +6,6 @@ import { AuthResponseDto } from './dtos/responses/auth-response.dto';
 import { registerDto } from './dtos/requests/register.dto';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { AppConfig } from 'src/config/interfaces/app-config.interface';
 
 @Injectable()
 export class AuthenticationService {
@@ -33,8 +32,7 @@ export class AuthenticationService {
       const accessTokenPayload = { sub: id, email };
       const refreshTokenPayload = { sub: id, email, type: 'refresh' };
 
-      const jwtConfig =
-        this.configService.get<AppConfig['auth']['jwt']>('auth.jwt')!;
+      const jwtConfig = this.configService.get('auth.jwt')!;
 
       const [accessToken, refreshToken] = await Promise.all([
         this.jwtService.signAsync(accessTokenPayload, {

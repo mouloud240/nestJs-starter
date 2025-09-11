@@ -4,8 +4,6 @@ import { AppService } from './app.service';
 
 import { BullModule } from '@nestjs/bullmq';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import appConfig from './config/app.config';
-import { AppConfig } from './config/interfaces/app-config.interface';
 import { QUEUE_NAME } from './common/constants/queues';
 import { AuthenticationModule } from './authentication/authentication.module';
 import { UserModule } from './user/user.module';
@@ -13,34 +11,43 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { EmailModule } from './email/email.module';
 import { HealthModule } from './health/health.module';
 import { QueueModule } from './queue/queue.module';
+import mailConfig from './config/mail.config';
+import redisConfig from './config/redis.config';
+import authConfig from './config/auth.config';
+import appConfig from './config/app.config';
+import { RedisModule } from 'nestjs-redis-client';
+
 @Module({
   imports: [
-    ThrottlerModule.forRoot({
-      throttlers: [
-        {
-          name: 'global',
-          limit: 100, // Maximum number of requests
-          ttl: 60, // Time to live in seconds
-          blockDuration: 10, // Block duration in seconds
-          ignoreUserAgents: [/^curl\//i], // Ignore requests from curl user agent
-        },
-      ],
+    ThrottlerModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        throttlers: [
+          {
+            name: 'global',
+            limit: configService.get<number>('app.throttler.limit')!,
+            ttl: configService.get<number>('app.throttler.ttl')!,
+            blockDuration: configService.get<number>(
+              'app.throttler.blockDuration',
+            ),
+            ignoreUserAgents: configService.get<RegExp[]>( // Ignore requests from curl user agent
+              'app.throttler.ignoreUserAgents',
+            ),
+          },
+        ],
+      }),
+      inject: [ConfigService],
     }),
+    RedisModule.registerAsync(redisConfig.asProvider()),
     ConfigModule.forRoot({
       isGlobal: true, // Makes the configuration available globally
       validationSchema: null, // You can define a Joi schema here for validation if needed
-      load: [appConfig],
+      load: [mailConfig, redisConfig, authConfig, appConfig],
     }),
     BullModule.forRootAsync({
       useFactory: (configService: ConfigService) => {
-        const redisHost = configService.get<AppConfig['redis']['host']>(
-          'redis.host',
-          'localhost',
-        );
-        const redisPort = configService.get<AppConfig['redis']['port']>(
-          'redis.port',
-          6379,
-        );
+        const redisHost = configService.get<string>('redis.host');
+        const redisPort = configService.get<number>('redis.port');
         const redisUrl = `redis://${redisHost}:${redisPort}`;
         return {
           connection: {
