@@ -15,7 +15,7 @@ import { UserService } from 'src/user/user.service';
 import { AuthResponseDto } from './dtos/responses/auth-response.dto';
 import { registerDto } from './dtos/requests/register.dto';
 import { JwtService } from '@nestjs/jwt';
-import {  ConfigType } from '@nestjs/config';
+import { ConfigType } from '@nestjs/config';
 import { RedisService } from 'nestjs-redis-client';
 import { InjectQueue } from '@nestjs/bullmq';
 import { QUEUE_NAME } from 'src/common/constants/queues';
@@ -23,6 +23,7 @@ import { Queue } from 'bullmq';
 import { MAIL_JOBS } from 'src/common/constants/jobs';
 import { v4 as uuidv4 } from 'uuid';
 import authConfig from 'src/config/auth.config';
+import { Profile } from 'passport-google-oauth20';
 
 @Injectable()
 export class AuthenticationService {
@@ -85,7 +86,9 @@ export class AuthenticationService {
         'User registered successfully. Please check your email for verification code.',
     };
   }
-
+  logOauthUser(profile: Profile): Promise<User> {
+    throw new Error('Method not implemented.');
+  }
   private async generateAndSetOtp(user: User): Promise<string> {
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     await this.redisService.set(`verification:${user.email}`, otp, 600);

@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
 import { LocalGuard } from './guards/local.guard';
 import { USER } from './decorators/user.decorartor';
@@ -7,6 +7,7 @@ import { registerDto } from './dtos/requests/register.dto';
 import { ApiOkResponse, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthResponseDto } from './dtos/responses/auth-response.dto';
 import { RefreshTokenGuard } from './guards/refresh-token.guard';
+import { GoogleGuard } from './guards/oauth/google.guard';
 
 @Controller('authentication')
 export class AuthenticationController {
@@ -136,5 +137,21 @@ export class AuthenticationController {
     @Body('password') password: string,
   ) {
     return this.authenticationService.resetPassword(token, password);
+  }
+
+  @ApiOperation({
+    summary: 'Google OAuth2 login',
+    description: 'Initiates the Google OAuth2 login flow.',
+  })
+  @UseGuards(GoogleGuard)
+  @Get('oauth/google')
+  googleAuth() {
+    return;
+  }
+
+  @UseGuards(GoogleGuard)
+  @Get('oauth/google/callback')
+  googleAuthRedirect(@USER() user: User) {
+    return this.authenticationService.issueTokens(user);
   }
 }

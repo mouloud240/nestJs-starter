@@ -8,14 +8,27 @@ import { AcessTokenGuard } from './guards/access-token.guard';
 import { RefreshTokenStrategy } from './strategies/refresh-token.strategy';
 import { RefreshTokenGuard } from './guards/refresh-token.guard';
 import { JwtModule } from '@nestjs/jwt';
+import { GoogleGuard } from './guards/oauth/google.guard';
+import { GoogleStrategy } from './strategies/oauth/google.strategy';
 
 @Module({
-  imports:[JwtModule.register({
-    global:true
-    
-  })],
+  imports: [
+    JwtModule.register({
+      global: true,
+    }),
+  ],
   controllers: [AuthenticationController],
-  providers: [AuthenticationService,LocalStrategy,LocalGuard,AccessTokenStrategy,AcessTokenGuard,RefreshTokenStrategy,RefreshTokenGuard],
-  exports:[AcessTokenGuard]
+  providers: [
+    AuthenticationService,
+    LocalStrategy,
+    LocalGuard,
+    AccessTokenStrategy,
+    AcessTokenGuard,
+    RefreshTokenStrategy,
+    GoogleGuard,
+    GoogleStrategy,
+    RefreshTokenGuard,
+  ],
+  exports: [AcessTokenGuard],
 })
 export class AuthenticationModule {}

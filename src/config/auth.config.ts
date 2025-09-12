@@ -14,6 +14,13 @@ export default registerAs(
         process.env.JWT_REFRESH_TOKEN_EXPIRES_IN || (86400 * 7).toString(),
       ), // 7 day
     },
+    oauth: {
+      google: {
+        clientID: process.env.GOOGLE_CLIENT_ID!,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+        callbackURL: process.env.GOOGLE_CALLBACK_URL!,
+        scope: ['email', 'profile'],
+      },
+    },
   }),
 );
-
