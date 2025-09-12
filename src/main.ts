@@ -9,6 +9,7 @@ import { doubleCsrf, DoubleCsrfConfigOptions } from 'csrf-csrf';
 import { AppModule } from './app.module';
 import { LoggerInterceptor } from './global/interceptors/logger.interceptor';
 import { ExtendedRequest } from './authentication/types/extended-req.type';
+import { ResponseFormatterInterceptor } from './global/interceptors/response-formatter.interceptor';
 async function bootstrap() {
   // the cors will be changed to the front end url  in production environnement
   const app = await NestFactory.create(AppModule, {
@@ -43,18 +44,6 @@ async function bootstrap() {
     }),
   );
 
-  app.use(
-    session({
-      secret: 'my-secret',
-      resave: false,
-      saveUninitialized: false,
-    }),
-  );
-
-  app.use(passport.session());
-
-  app.use(passport.initialize());
-
   const opts: DoubleCsrfConfigOptions = {
     getSecret: () => 'Secret', //TODO:generate a secret
     getSessionIdentifier: (req: ExtendedRequest) => req.user.id.toString(), //TODO:figure this out    cookieName: '__Host-psifi.x-csrf-token', // The name of the cookie to be used, recommend using Host prefix.
@@ -71,7 +60,10 @@ async function bootstrap() {
   const { doubleCsrfProtection } = doubleCsrf(opts);
   app.use(doubleCsrfProtection);
   //
-  app.useGlobalInterceptors(new LoggerInterceptor());
+  app.useGlobalInterceptors(
+    new LoggerInterceptor(),
+    new ResponseFormatterInterceptor(),
+  );
   // //PIPES
   app.useGlobalPipes(
     new ValidationPipe({
