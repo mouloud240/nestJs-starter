@@ -2,9 +2,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { apiReference } from '@scalar/nestjs-api-reference';
-import session from 'express-session';
 import helmet from 'helmet';
-import passport from 'passport';
 import { doubleCsrf, DoubleCsrfConfigOptions } from 'csrf-csrf';
 import { AppModule } from './app.module';
 import { LoggerInterceptor } from './global/interceptors/logger.interceptor';
@@ -15,7 +13,7 @@ async function bootstrap() {
   // the cors will be changed to the front end url  in production environnement
   const app = await NestFactory.create(AppModule, {
     cors: {
-      origin: ['http://localhost:3000', 'https://beta.portals.cam'],
+      origin: process.env.FRONTENT_URL || 'http://localhost:5372',
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
       credentials: true,
     },
@@ -28,7 +26,7 @@ async function bootstrap() {
   // app.use(
   //   ['/api-docs', '/api-docs-json'],
   //   BasicAuth({
-  //     users: { portals: 'Portals@2025' },
+  //     users: { admin: 'admin' },
   //     challenge: true,
   //   }),
   // );
