@@ -1,41 +1,53 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import { ConfigType } from '@nestjs/config';
 import * as cloudinary from 'cloudinary';
 import { Readable } from 'stream';
 
-interface UploadingOptions {
-  year: number;
-}
+import 'multer';
+import cloudConfig from 'src/config/cloud.config';
+import { UploadingOptions } from './types/upload-options.interface';
 
 @Injectable()
 export class CloudinaryService {
   private readonly logger = new Logger(CloudinaryService.name);
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    @Inject(cloudConfig.KEY)
+    private readonly cloudConfiguration: ConfigType<typeof cloudConfig>,
+  ) {
     // Configure Cloudinary with credentials from environment variables
+    // TODO: refactor this into new config style
     cloudinary.v2.config({
-      cloud_name: this.configService.get<string>('cloudinary.cloudName'),
-      api_key: this.configService.get<string>('cloudinary.apiKey'),
-      api_secret: this.configService.get<string>('cloudinary.apiSecret'),
+      cloud_name: this.cloudConfiguration.cloudName,
+      api_key: this.cloudConfiguration.apiKey,
+
+      api_secret: this.cloudConfiguration.apiSecret,
     });
   }
 
-  async uploadImage(
-    fileBase64: string,
+  async uploadFile(
+    file: Express.Multer.File,
     options: UploadingOptions,
   ): Promise<cloudinary.UploadApiResponse> {
     try {
-      const fileBuffer = Buffer.from(fileBase64, 'base64');
-      const folder = options.year.toString();
-      // Create a readable stream from the file buffer
-      const stream = Readable.from(fileBuffer);
+      const time = new Date().getFullYear();
+      const folder = `${options.uploadType.toLowerCase()}s/${time}/`;
 
-      this.logger.log('Upload to cloudinary');
+      //NOTE: this is an issue with multer and cloudinary sdk types ignore it for now
+      const buffer = Buffer.isBuffer(file.buffer)
+        ? file.buffer
+        : // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+          Buffer.from((file.buffer as any).data);
+      const stream = Readable.from([buffer]);
+      this.logger.log(
+        'Starting upload to Cloudinary...' + stream.readableLength,
+      );
       // Return a promise to handle the upload_stream result
       return new Promise((resolve, reject) => {
         const uploadStream = cloudinary.v2.uploader.upload_stream(
           {
             folder: folder || undefined,
+
             resource_type: 'auto', // Automatically detect file type (image, video, etc.)
           },
           (
@@ -44,13 +56,12 @@ export class CloudinaryService {
           ) => {
             if (error) {
               this.logger.error(`Upload failed: ${error.message}`, error.stack);
-              return reject(error);
+              return reject(Error(error.message));
             }
             if (!result) {
               this.logger.error('Upload failed: No result returned');
               return reject(new Error('No result returned from Cloudinary'));
             }
-            this.logger.log(`Upload successful: ${JSON.stringify(result)}`);
             resolve(result);
           },
         );
@@ -59,7 +70,8 @@ export class CloudinaryService {
         stream.pipe(uploadStream);
       });
     } catch (e) {
-      this.logger.error(`Upload failed: ${e.message}`, e.stack);
+      //TODO add better error handling
+      this.logger.error(`Upload failed: ${e}`);
       throw e;
     }
   }
