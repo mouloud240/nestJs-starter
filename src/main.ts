@@ -107,11 +107,11 @@ async function bootstrap() {
   });
   //SWAGGER DOCS BUILDER
   const config = new DocumentBuilder()
-    .setTitle('Portals Core Api Documentation')
-    .setDescription('The Portals Core Api Documentation')
+    .setTitle('Core Api Documentation')
+    .setDescription('The Api Documentation')
     .setVersion('1.0')
     .addBearerAuth()
-    .addTag('Portals')
+    .addTag('Core')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   app.use(
