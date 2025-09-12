@@ -12,6 +12,7 @@ import { SearchService } from './search.service';
     ElasticsearchModule.registerAsync({
       inject: [ConfigService],
       imports: [ConfigModule],
+      //TODO:move this into a config file
       useFactory: (ConfigService: ConfigService) => ({
         node: ConfigService.get('elasticSearch.node'),
         pingTimeout: ConfigService.get('elasticSearch.timeout'),
