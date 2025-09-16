@@ -26,7 +26,7 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
       path: '/graphql',
       playground: false,
       autoSchemaFile: true,
-      context: ({ req, res, user }) => ({ req, res, user }),
+      context: ({ req, res }) => ({ req, res }),
       driver: ApolloDriver,
     }),
     ThrottlerModule.forRootAsync({
@@ -48,28 +48,6 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
       validationSchema: null, // You can define a Joi schema here for validation if needed
       load: [mailConfig, redisConfig, authConfig, appConfig],
     }),
-    BullModule.forRootAsync({
-      useFactory: (configService: ConfigService) => {
-        const redisHost = configService.get<string>('redis.host');
-        const redisPort = configService.get<number>('redis.port');
-        const redisUrl = `redis://${redisHost}:${redisPort}`;
-        return {
-          connection: {
-            host: redisHost,
-            port: redisPort,
-            url: redisUrl,
-            db: 3, // Default database
-          },
-        };
-      },
-
-      inject: [ConfigService],
-    }),
-    BullModule.registerQueue(
-      ...Object.values(QUEUE_NAME).map((queueName) => ({
-        name: queueName,
-      })),
-    ),
     AuthenticationModule,
     UserModule,
     EmailModule,
