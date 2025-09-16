@@ -22,7 +22,7 @@ export class AccessTokenStrategy extends PassportStrategy(
     });
   }
 
-  async validate(payload: AccessTokenPayload): Promise<User | null> {
-    return this.userService.findById(payload.sub);
+  validate(payload: AccessTokenPayload): AccessTokenPayload['user'] {
+    return payload.user;
   }
 }

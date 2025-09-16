@@ -3,7 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
 import { BullModule } from '@nestjs/bullmq';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigService, ConfigType } from '@nestjs/config';
 import { QUEUE_NAME } from './common/constants/queues';
 import { AuthenticationModule } from './authentication/authentication.module';
 import { UserModule } from './user/user.module';
@@ -14,32 +14,36 @@ import { QueueModule } from './queue/queue.module';
 import mailConfig from './config/mail.config';
 import redisConfig from './config/redis.config';
 import authConfig from './config/auth.config';
-import appConfig from './config/app.config';
 import { RedisModule } from 'nestjs-redis-client';
+import cloudConfig from './config/cloud.config';
+import appConfig from './config/app.config';
 
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 @Module({
   imports: [
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      path: '/graphql',
+      playground: false,
+      autoSchemaFile: true,
+      context: ({ req, res, user }) => ({ req, res, user }),
+      driver: ApolloDriver,
+    }),
     ThrottlerModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
+      useFactory: (appConf: ConfigType<typeof appConfig>) => ({
         throttlers: [
           {
-            name: 'global',
-            limit: configService.get<number>('app.throttler.limit')!,
-            ttl: configService.get<number>('app.throttler.ttl')!,
-            blockDuration: configService.get<number>(
-              'app.throttler.blockDuration',
-            ),
-            ignoreUserAgents: configService.get<RegExp[]>( // Ignore requests from curl user agent
-              'app.throttler.ignoreUserAgents',
-            ),
+            name: 'Main throttler',
+            ...appConf.throttler,
           },
         ],
       }),
-      inject: [ConfigService],
+      inject: [appConfig.KEY],
     }),
     RedisModule.registerAsync(redisConfig.asProvider()),
     ConfigModule.forRoot({
+      expandVariables: true,
+      cache: true,
       isGlobal: true, // Makes the configuration available globally
       validationSchema: null, // You can define a Joi schema here for validation if needed
       load: [mailConfig, redisConfig, authConfig, appConfig],

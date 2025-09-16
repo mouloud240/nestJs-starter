@@ -1,11 +1,12 @@
-import { createParamDecorator, ExecutionContext } from "@nestjs/common";
-import { User } from "src/user/entities/user.entity";
-import { ExtendedRequest } from "../types/extended-req.type";
+import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import { ExtendedRequest } from '../types/extended-req.type';
+import { AccessTokenPayload } from '../interfaces/access-token-payload.interface';
+import { GqlExecutionContext } from '@nestjs/graphql';
 
 export const USER = createParamDecorator(
-  (data: keyof User | undefined, ctx: ExecutionContext) => {
-    const request = ctx.switchToHttp().getRequest<ExtendedRequest>();
-    const user = request.user;
+  (data: keyof AccessTokenPayload['user'], ctx: ExecutionContext) => {
+    const user = GqlExecutionContext.create(ctx).getContext().req
+      .user as AccessTokenPayload['user'];
     if (!user) {
       throw new Error('User not found in request');
     }
@@ -17,4 +18,4 @@ export const USER = createParamDecorator(
     // Otherwise, return the entire user object
     return user;
   },
-)
+);
