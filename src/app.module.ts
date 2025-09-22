@@ -16,6 +16,7 @@ import redisConfig from './config/redis.config';
 import authConfig from './config/auth.config';
 import appConfig from './config/app.config';
 import { RedisModule } from 'nestjs-redis-client';
+import { DbModule } from './infrastructure/db/db.module';
 
 @Module({
   imports: [
@@ -71,6 +72,7 @@ import { RedisModule } from 'nestjs-redis-client';
     EmailModule,
     HealthModule,
     QueueModule,
+    DbModule,
   ],
   controllers: [AppController],
   providers: [AppService],
