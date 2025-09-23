@@ -1,9 +1,9 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { ExtendedRequest } from '../types/extended-req.type';
-import { User } from 'src/core/user/entities/user.entity';
+import { AccessTokenPayload } from '../interfaces/access-token-payload.interface';
 
 export const USER = createParamDecorator(
-  (data: keyof User | undefined, ctx: ExecutionContext) => {
+  (data: keyof AccessTokenPayload | undefined, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest<ExtendedRequest>();
     const user = request.user;
     if (!user) {

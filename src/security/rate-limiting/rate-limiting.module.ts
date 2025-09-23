@@ -1,27 +1,24 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigType } from '@nestjs/config';
 import { ThrottlerModule } from '@nestjs/throttler';
+import appConfig from 'src/config/app.config';
 
 @Module({
   imports: [
     ThrottlerModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
+      imports: [ConfigModule.forFeature(appConfig)],
+      inject: [appConfig.KEY],
+      useFactory: (configService: ConfigType<typeof appConfig>) => ({
         throttlers: [
           {
             name: 'global',
-            limit: configService.get<number>('app.throttler.limit')!,
-            ttl: configService.get<number>('app.throttler.ttl')!,
-            blockDuration: configService.get<number>(
-              'app.throttler.blockDuration',
-            ),
-            ignoreUserAgents: configService.get<RegExp[]>( // Ignore requests from curl user agent
-              'app.throttler.ignoreUserAgents',
-            ),
+            limit: configService.throttler.limit,
+            ttl: configService.throttler.ttl,
+            blockDuration: configService.throttler.blockDuration,
+            ignoreUserAgents: configService.throttler.ignoreUserAgents,
           },
         ],
       }),
-      inject: [ConfigService],
     }),
   ],
 })

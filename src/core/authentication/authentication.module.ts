@@ -11,6 +11,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { GoogleGuard } from './guards/oauth/google.guard';
 import { GoogleStrategy } from './strategies/oauth/google.strategy';
 import { UserModule } from '../user/user.module';
+import { QueueModule } from 'src/infrastructure/queue/queue.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { UserModule } from '../user/user.module';
       global: true,
     }),
     UserModule,
+    QueueModule,
   ],
   controllers: [AuthenticationController],
   providers: [

@@ -1,9 +1,9 @@
-import { Global, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { CloudinaryService } from './cloudinary.service';
-@Global()
+import cloudConfig from 'src/config/cloud.config';
 @Module({
-  imports: [ConfigModule],
+  imports: [ConfigModule.forFeature(cloudConfig)],
   providers: [CloudinaryService],
   exports: [CloudinaryService],
 })
