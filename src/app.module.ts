@@ -14,13 +14,20 @@ import { MonitoringModule } from './monitoring/monitoring.module';
 import { SecurityModule } from './security/security.module';
 import { CommonModule } from './common/modules/common.module';
 import { CoreModule } from './core/core.module';
+import elasticSearchConfig from './config/elastic-search.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true, // Makes the configuration available globally
       validationSchema: null, // You can define a Joi schema here for validation if needed
-      load: [mailConfig, redisConfig, authConfig, appConfig],
+      load: [
+        mailConfig,
+        redisConfig,
+        authConfig,
+        appConfig,
+        elasticSearchConfig,
+      ],
     }),
     BullModule.forRootAsync({
       useFactory: (configService: ConfigService) => {
