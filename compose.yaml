@@ -11,20 +11,23 @@ services:
   server:
     build:
       context: .
-    environment:
-      NODE_ENV: production
+      dockerfile: Dockerfile.${NODE_ENV:-dev}
     ports:
       - 3000:3000
     depends_on:
       db:
         condition: service_healthy
+    volumes:
+      #   - ./dist:/usr/src/app/dist
+      - .:/usr/src/app
+
   redis:
     image: redis:latest
     restart: always
     ports:
       - 6379:6379
     healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -40,7 +43,7 @@ services:
       - 9200:9200
       - 9300:9300
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:9200" ]
+      test: ['CMD', 'curl', '-f', 'http://localhost:9200']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -48,17 +51,14 @@ services:
     image: postgres
     restart: always
     user: postgres
-    secrets:
-      - db-password
+    env_file:
+      - .env
     volumes:
       - db-data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=example
-      - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
     expose:
       - 5432
     healthcheck:
-      test: [ "CMD", "pg_isready" ]
+      test: ['CMD', 'pg_isready']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -67,4 +67,3 @@ volumes:
 secrets:
   db-password:
     file: db/password.txt
-   
