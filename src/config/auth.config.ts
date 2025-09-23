@@ -5,8 +5,10 @@ export default registerAs(
   'auth',
   (): AuthConfig => ({
     jwt: {
-      accessTokenSecret: process.env.JWT_ACCESS_TOKEN_SECRET!,
-      refreshTokenSecret: process.env.JWT_REFRESH_TOKEN_SECRET!,
+      accessTokenSecret:
+        process.env.JWT_ACCESS_TOKEN_SECRET || 'defaultAccessTokenSecret',
+      refreshTokenSecret:
+        process.env.JWT_REFRESH_TOKEN_SECRET! || 'defaultRefreshTokenSecret',
       accessTokenExpiresIn: parseInt(
         process.env.JWT_ACCESS_TOKEN_EXPIRES_IN || '86400',
       ), // 1 day
