@@ -2,11 +2,11 @@ import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
 import { MAIL_JOBS } from 'src/common/constants/jobs';
 import { QUEUE_NAME } from 'src/common/constants/queues';
-import { EmailService } from 'src/email/email.service';
 import { SendMailDto } from './dtos/send-mail.dto';
 import { Logger } from '@nestjs/common';
 import { SendVerificationMailDto } from './dtos/send-verification-mail.dto';
 import { SendPasswordResetMailDto } from './dtos/send-password-reset-mail.dto';
+import { EmailService } from 'src/common/modules/email/email.service';
 
 @Processor(QUEUE_NAME.MAIL)
 export class MailProcessor extends WorkerHost {

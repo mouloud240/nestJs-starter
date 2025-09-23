@@ -7,4 +7,3 @@ export default registerAs('redis', () => ({
   // this sets the redis module to be global
   isGlobal: true,
 }));
-

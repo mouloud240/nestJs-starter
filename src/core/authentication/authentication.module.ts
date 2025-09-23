@@ -10,12 +10,14 @@ import { RefreshTokenGuard } from './guards/refresh-token.guard';
 import { JwtModule } from '@nestjs/jwt';
 import { GoogleGuard } from './guards/oauth/google.guard';
 import { GoogleStrategy } from './strategies/oauth/google.strategy';
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
     JwtModule.register({
       global: true,
     }),
+    UserModule,
   ],
   controllers: [AuthenticationController],
   providers: [

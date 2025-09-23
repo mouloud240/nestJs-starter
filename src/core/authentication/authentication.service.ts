@@ -10,8 +10,6 @@ import {
   compareHash,
   generateHash,
 } from 'src/common/utils/authentication/bcrypt.utils';
-import { User } from 'src/user/entities/user.entity';
-import { UserService } from 'src/user/user.service';
 import { AuthResponseDto } from './dtos/responses/auth-response.dto';
 import { registerDto } from './dtos/requests/register.dto';
 import { JwtService } from '@nestjs/jwt';
@@ -24,6 +22,8 @@ import { MAIL_JOBS } from 'src/common/constants/jobs';
 import { v4 as uuidv4 } from 'uuid';
 import authConfig from 'src/config/auth.config';
 import { Profile } from 'passport-google-oauth20';
+import { UserService } from '../user/user.service';
+import { User } from '../user/entities/user.entity';
 
 @Injectable()
 export class AuthenticationService {

@@ -1,10 +1,10 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 import { QUEUE_NAME } from 'src/common/constants/queues';
-import { SearchService } from 'src/search/search.service';
 import { SearchJobDataDto } from './dtos/SearchJobData.dto';
 import { Job } from 'bullmq';
 import { SEARACH_JOB_NAME } from 'src/common/constants/jobs';
+import { SearchService } from 'src/infrastructure/search/search.service';
 
 @Processor(QUEUE_NAME.SEARCH)
 export class SearchProcessor extends WorkerHost {

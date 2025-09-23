@@ -1,9 +1,9 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
-import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { UPLOAD_JOBS } from 'src/common/constants/jobs';
 import { QUEUE_NAME } from 'src/common/constants/queues';
 import { UploadJobDto } from './dto/upload-job.dto';
+import { CloudinaryService } from 'src/infrastructure/cloudinary/cloudinary.service';
 
 @Processor(QUEUE_NAME.UPLOAD)
 export class UploadProcessor extends WorkerHost {

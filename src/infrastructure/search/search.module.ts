@@ -1,8 +1,6 @@
-import { BullModule } from '@nestjs/bullmq';
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ElasticsearchModule } from '@nestjs/elasticsearch';
-
 
 import { SearchService } from './search.service';
 
@@ -28,6 +26,6 @@ import { SearchService } from './search.service';
     }),
   ],
   providers: [SearchService],
-  exports: [SearchService, ElasticsearchModule, BullModule],
+  exports: [SearchService, ElasticsearchModule],
 })
 export class SearchModule {}

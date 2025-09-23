@@ -1,14 +1,14 @@
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
-import { CloudinaryModuleWrapper } from 'src/cloudinary/cloudinary.module';
 import { QUEUE_NAME } from 'src/common/constants/queues';
 import redisConfig from 'src/config/redis.config';
-import { EmailModule } from 'src/email/email.module';
-import { SearchModule } from 'src/search/search.module';
 import { MailProcessor } from './mail/mail.processor';
 import { SearchProcessor } from './search/search.processor';
 import { UploadProcessor } from './upload/upload.processor';
+import { CloudinaryModuleWrapper } from '../cloudinary/cloudinary.module';
+import { EmailModule } from 'src/common/modules/email/email.module';
+import { SearchModule } from '../search/search.module';
 
 @Module({
   imports: [
