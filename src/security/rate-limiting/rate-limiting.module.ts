@@ -21,5 +21,6 @@ import appConfig from 'src/config/app.config';
       }),
     }),
   ],
+  exports: [ThrottlerModule],
 })
 export class RateLimitingModule {}
