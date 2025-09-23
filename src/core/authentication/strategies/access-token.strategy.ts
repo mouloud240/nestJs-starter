@@ -1,10 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable } from '@nestjs/common';
+import {  ConfigType } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { AccessTokenPayload } from '../interfaces/access-token-payload.interface';
-import { UserService } from 'src/core/user/user.service';
-import { User } from 'src/core/user/entities/user.entity';
+import authConfig from 'src/config/auth.config';
 
 @Injectable()
 export class AccessTokenStrategy extends PassportStrategy(
@@ -12,17 +11,16 @@ export class AccessTokenStrategy extends PassportStrategy(
   'access-token',
 ) {
   constructor(
-    configService: ConfigService,
-    private readonly userService: UserService,
+    @Inject(authConfig.KEY) configService: ConfigType<typeof authConfig>,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: configService.get<string>('auth.jwt.accessTokenSecret')!,
+      secretOrKey: configService.jwt.accessTokenSecret,
     });
   }
 
-  async validate(payload: AccessTokenPayload): Promise<User | null> {
-    return this.userService.findById(payload.sub);
+  validate(payload: AccessTokenPayload): AccessTokenPayload['user'] {
+    return payload.user;
   }
 }

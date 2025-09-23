@@ -3,9 +3,12 @@ import { ExtendedRequest } from '../types/extended-req.type';
 import { AccessTokenPayload } from '../interfaces/access-token-payload.interface';
 
 export const USER = createParamDecorator(
-  (data: keyof AccessTokenPayload['user'] | undefined, ctx: ExecutionContext) => {
+  (
+    data: keyof AccessTokenPayload['user'] | undefined,
+    ctx: ExecutionContext,
+  ) => {
     const request = ctx.switchToHttp().getRequest<ExtendedRequest>();
-    const {user} = request;
+    const { user } = request;
     if (!user) {
       throw new Error('User not found in request');
     }

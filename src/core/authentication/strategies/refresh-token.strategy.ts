@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable } from '@nestjs/common';
+import { ConfigService, ConfigType } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { RefreshTokenPayload } from '../interfaces/refresh-token.dto';
 import { UserService } from 'src/core/user/user.service';
 import { User } from 'src/core/user/entities/user.entity';
+import authConfig from 'src/config/auth.config';
 
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(
@@ -12,13 +13,13 @@ export class RefreshTokenStrategy extends PassportStrategy(
   'refresh-token',
 ) {
   constructor(
-    configService: ConfigService,
+    @Inject(authConfig.KEY) configService: ConfigType<typeof authConfig>,
     private readonly userService: UserService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromBodyField('refreshToken'),
       ignoreExpiration: false,
-      secretOrKey: configService.get<string>('auth.jwt.refreshTokenSecret')!,
+      secretOrKey: configService.jwt.refreshTokenSecret,
     });
   }
 
