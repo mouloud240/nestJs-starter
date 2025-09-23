@@ -21,6 +21,7 @@ import elasticSearchConfig from './config/elastic-search.config';
     ConfigModule.forRoot({
       isGlobal: true, // Makes the configuration available globally
       validationSchema: null, // You can define a Joi schema here for validation if needed
+      expandVariables: true,
       load: [
         mailConfig,
         redisConfig,
