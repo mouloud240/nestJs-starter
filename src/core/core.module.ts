@@ -4,5 +4,6 @@ import { AuthenticationModule } from './authentication/authentication.module';
 
 @Module({
   imports: [UserModule, AuthenticationModule],
+  exports: [UserModule, AuthenticationModule],
 })
 export class CoreModule {}

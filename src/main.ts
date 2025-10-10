@@ -5,9 +5,10 @@ import { apiReference } from '@scalar/nestjs-api-reference';
 import helmet from 'helmet';
 import { doubleCsrf, DoubleCsrfConfigOptions } from 'csrf-csrf';
 import { AppModule } from './app.module';
-import { LoggerInterceptor } from './monitoring/logger/logger.interceptor';
 import { ResponseFormatterInterceptor } from './common/interceptors/response-formatter.interceptor';
-import { HttpExceptionFilter } from './common/filter/httpException.filter'; import { ExtendedRequest } from './core/authentication/types/extended-req.type';
+import { HttpExceptionFilter } from './common/filter/httpException.filter';
+import { ExtendedRequest } from './core/authentication/types/extended-req.type';
+import { LoggerInterceptor } from './monitoring/health/logger/logger.interceptor';
 async function bootstrap() {
   // the cors will be changed to the front end url  in production environnement
   const app = await NestFactory.create(AppModule, {
@@ -72,7 +73,7 @@ async function bootstrap() {
   );
 
   //FILTERS
-  app.use(new HttpExceptionFilter());
+  app.useGlobalFilters(new HttpExceptionFilter());
   // app.useGlobalFilters(new CustomWsExceptionFilter());
   //app.useGlobalFilters(new ElasticSearchExceptionFilter()); //TODO:figure out what error to catch
   //--
@@ -125,5 +126,13 @@ async function bootstrap() {
   const port = process.env.PORT || 3000;
   await app.listen(port);
 }
-// eslint-disable-next-line @typescript-eslint/no-floating-promises
-bootstrap();
+bootstrap()
+  .then(() => {
+    console.log(
+      `Application is running on: ${process.env.APP_URL || `http://localhost:${process.env.PORT || 3000}`}`,
+    );
+  })
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });
