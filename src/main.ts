@@ -20,16 +20,6 @@ async function bootstrap() {
     logger: ['log', 'error', 'warn', 'debug', 'verbose'],
   });
 
-  //SECURITY
-  // added a basic auth for the swagger docs
-  // TODO: add those into .env
-  // app.use(
-  //   ['/api-docs', '/api-docs-json'],
-  //   BasicAuth({
-  //     users: { admin: 'admin' },
-  //     challenge: true,
-  //   }),
-  // );
   app.use(
     helmet({
       contentSecurityPolicy: {
