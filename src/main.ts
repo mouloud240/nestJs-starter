@@ -1,4 +1,4 @@
-import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { apiReference } from '@scalar/nestjs-api-reference';
@@ -32,6 +32,7 @@ async function bootstrap() {
       },
     }),
   );
+  const logger = app.get(Logger);
 
   const opts: DoubleCsrfConfigOptions = {
     getSecret: () => 'Secret', //TODO:generate a secret
@@ -70,7 +71,7 @@ async function bootstrap() {
   app.enableShutdownHooks();
   //Those to are for handling the shutdown of the server
   process.on('SIGINT', () => {
-    console.log('Received SIGINT. Shutting down gracefully...');
+    logger.log('Received SIGINT. Shutting down gracefully...');
     app
       .close()
       .then(() => {
@@ -81,7 +82,7 @@ async function bootstrap() {
       });
   });
   process.on('SIGTERM', () => {
-    console.log('Received SIGTERM. Shutting down gracefully...');
+    logger.log('Received SIGTERM. Shutting down gracefully...');
     app
       .close()
       .then(() => {
@@ -93,7 +94,7 @@ async function bootstrap() {
   });
   // Handle uncaught exceptions
   process.on('uncaughtException', (err) => {
-    console.error('Uncaught Exception:', err);
+    logger.error('Uncaught Exception:', err);
   });
   //SWAGGER DOCS BUILDER
   const config = new DocumentBuilder()
