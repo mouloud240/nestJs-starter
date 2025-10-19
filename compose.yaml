@@ -48,7 +48,7 @@ services:
       timeout: 5s
       retries: 5
   db:
-    image: postgres
+    image: postgres:18-alpine
     restart: always
     user: postgres
     env_file:

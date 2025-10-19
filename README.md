@@ -6,7 +6,7 @@ A scalable, production-ready NestJS boilerplate with batteries included. This st
 
 ## Status
 
-This project is currently in active development. Most features should be done in a day or two. Contributions are welcome!
+This project is currently in active development , but it can be used for projects just fine. Contributions are welcome!
 
 ## 📖 Table of Contents
 
@@ -79,40 +79,53 @@ This project is currently in active development. Most features should be done in
 
 ```
 src/
-├── authentication/
-│   ├── decorators/
-│   ├── dtos/
-│   ├── guards/
-│   ├── strategies/
-│   ├── types/
-│   ├── authentication.controller.ts
-│   ├── authentication.controller.spec.ts
-│   ├── authentication.module.ts
-│   └── authentication.service.ts
-│
 ├── common/
 │   ├── constants/
 │   │   ├── jobs.ts
 │   │   └── queues.ts
+│   ├── filter/
+│   ├── interceptors/
+│   ├── modules/
+│   ├── scripts/
+│   ├── types/
 │   └── utils/
-│       ├── authentication/
-│       └── webSocket/
-│           ├── index.ts
-│           ├── json.utils.ts
-│           ├── object.utils.ts
-│           ├── query.utils.ts
-│           └── result.util.ts
 │
 ├── config/
-├── redis/
-├── user/
+│   ├── interfaces/
+│   ├── app.config.ts
+│   ├── auth.config.ts
+│   ├── cloud.config.ts
+│   ├── db.config.ts
+│   ├── elastic-search.config.ts
+│   ├── mail.config.ts
+│   └── redis.config.ts
 │
-├── app.controller.ts
+├── core/
+│   ├── authentication/
+│   ├── user/
+│   ├── websocket/
+│   └── core.module.ts
+│
+├── infrastructure/
+│   ├── cloudinary/
+│   ├── db/
+│   ├── queue/
+│   ├── search/
+│   └── infrastructure.module.ts
+│
+├── monitoring/
+│   ├── health/
+│   └── monitoring.module.ts
+│
+├── security/
+│   ├── rate-limiting/
+│   └── security.module.ts
+│
 ├── app.controller.spec.ts
+├── app.controller.ts
 ├── app.module.ts
 ├── app.service.ts
-└── main.ts
-```
+└── main.ts```
 
 ---
 
