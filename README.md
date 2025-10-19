@@ -199,13 +199,15 @@ You can use Redis for:
 * Redis Streams (event queues)
 * WebSocket scaling
 
-Configured in `redis/` module.
+The previous Redis module was extracted to an independent package: [nestjs-redis-module](https://www.npmjs.com/package/nestjs-redis-client)
 
 ---
 
 ## 🌐 WebSockets
 
 Supports **single-user messaging** and **distributed WebSocket server** setup using Redis adapter. Define events in `common/utils/webSocket/`.
+Authentication is done using extending the base WebSocket gateway located in `core/websocket/`.
+For more details on this pattern, check out this article: [WebSocket Authentication in NestJs](https://medium.com/devops-dev/nestjs-websocket-authentication-304082fb969c)
 
 ---
 
