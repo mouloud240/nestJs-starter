@@ -4,7 +4,7 @@ import {
   Logger,
   NestInterceptor,
 } from '@nestjs/common';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { Observable, tap } from 'rxjs';
 
 export class LoggerInterceptor implements NestInterceptor {
@@ -25,10 +25,13 @@ export class LoggerInterceptor implements NestInterceptor {
     );
     return next.handle().pipe(
       tap(() => {
+        const statusCode = context
+          .switchToHttp()
+          .getResponse<Response>().statusCode;
         const endTime = Date.now();
         const responseTime = endTime - startTime;
         this.logger.log(
-          `✅ Response completed in ${responseTime}ms ${responseTime < 100 ? '🔥' : responseTime < 300 ? `🌀` : '🐢'}`,
+          `✅ Response completed in ${responseTime}ms ${responseTime < 100 ? '🔥' : responseTime < 300 ? `🌀` : '🐢'} with Status:${statusCode}`,
         );
       }),
     );
