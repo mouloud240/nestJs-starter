@@ -4,8 +4,8 @@ import { JwtService } from '@nestjs/jwt';
 import { Socket } from 'socket.io';
 import { isString } from 'node:util';
 import { AccessTokenPayload } from '../authentication/interfaces/access-token-payload.interface';
-import { UserService } from '../user/user.service';
 import { User } from '../user/entities/user.entity';
+import { UserService } from '../user/v1/user.service';
 
 export class WsConnectionsManagerGateway
   implements OnGatewayConnection, OnGatewayDisconnect

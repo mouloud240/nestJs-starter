@@ -1,13 +1,13 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AuthenticationService } from './authentication.service';
-import { LocalGuard } from './guards/local.guard';
-import { USER } from './decorators/user.decorartor';
 import { registerDto } from './dtos/requests/register.dto';
 import { ApiOkResponse, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthResponseDto } from './dtos/responses/auth-response.dto';
-import { RefreshTokenGuard } from './guards/refresh-token.guard';
-import { GoogleGuard } from './guards/oauth/google.guard';
-import { User } from '../user/entities/user.entity';
+import { LocalGuard } from '../guards/local.guard';
+import { USER } from '../decorators/user.decorartor';
+import { User } from 'src/core/user/entities/user.entity';
+import { RefreshTokenGuard } from '../guards/refresh-token.guard';
+import { GoogleGuard } from '../guards/oauth/google.guard';
 
 @Controller('authentication')
 export class AuthenticationController {

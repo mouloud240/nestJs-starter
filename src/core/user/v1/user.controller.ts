@@ -1,6 +1,6 @@
 import { Controller, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
-import { AccessTokenGuard } from '../authentication/guards/access-token.guard';
+import { AccessTokenGuard } from 'src/core/authentication/guards/access-token.guard';
 
 @Controller('user')
 @UseGuards(AccessTokenGuard)

@@ -22,8 +22,8 @@ import { MAIL_JOBS } from 'src/common/constants/jobs';
 import { v4 as uuidv4 } from 'uuid';
 import authConfig from 'src/config/auth.config';
 import { Profile } from 'passport-google-oauth20';
-import { UserService } from '../user/user.service';
-import { User } from '../user/entities/user.entity';
+import { UserService } from 'src/core/user/v1/user.service';
+import { User } from 'src/core/user/entities/user.entity';
 
 @Injectable()
 export class AuthenticationService {

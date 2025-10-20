@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { User } from './entities/user.entity';
-import { registerDto } from '../authentication/dtos/requests/register.dto';
+import { registerDto } from 'src/core/authentication/v1/dtos/requests/register.dto';
+import { User } from '../entities/user.entity';
 @Injectable()
 export class UserService {
   private users: User[] = [];
