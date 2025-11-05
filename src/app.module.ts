@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
-import { ConfigModule} from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import mailConfig from './config/mail.config';
 import redisConfig from './config/redis.config';
 import authConfig from './config/auth.config';
@@ -31,6 +31,7 @@ import elasticSearchConfig from './config/elastic-search.config';
     InfrastructureModule,
     MonitoringModule,
     SecurityModule,
+
     CommonModule,
     CoreModule,
   ],

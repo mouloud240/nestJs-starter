@@ -5,7 +5,6 @@ import { CloudinaryModuleWrapper } from './cloudinary/cloudinary.module';
 import { QueueModule } from './queue/queue.module';
 import { RedisModule } from 'nestjs-redis-client';
 import redisConfig from 'src/config/redis.config';
-import { BullModule } from '@nestjs/bullmq';
 
 @Module({
   imports: [
@@ -15,12 +14,6 @@ import { BullModule } from '@nestjs/bullmq';
     QueueModule,
     RedisModule.registerAsync(redisConfig.asProvider()),
   ],
-  exports: [
-    RedisModule,
-    QueueModule,
-    CloudinaryModuleWrapper,
-    BullModule,
-    DbModule,
-  ],
+  exports: [RedisModule, QueueModule, CloudinaryModuleWrapper, DbModule],
 })
 export class InfrastructureModule {}

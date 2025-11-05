@@ -1,4 +1,4 @@
-import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { apiReference } from '@scalar/nestjs-api-reference';
@@ -8,7 +8,7 @@ import { AppModule } from './app.module';
 import { ResponseFormatterInterceptor } from './common/interceptors/response-formatter.interceptor';
 import { HttpExceptionFilter } from './common/filter/httpException.filter';
 import { ExtendedRequest } from './core/authentication/types/extended-req.type';
-import { LoggerInterceptor } from './monitoring/health/logger/logger.interceptor';
+import { LoggerServiceBuilder } from './monitoring/logger/logger.service';
 async function bootstrap() {
   // the cors will be changed to the front end url  in production environnement
   const app = await NestFactory.create(AppModule, {
@@ -17,9 +17,11 @@ async function bootstrap() {
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
       credentials: true,
     },
-    logger: ['log', 'error', 'warn', 'debug', 'verbose'],
+    bufferLogs: true, //So nestjs can log things during init
   });
 
+  const logger = app.get(LoggerServiceBuilder).build();
+  app.useLogger(logger);
   app.use(
     helmet({
       contentSecurityPolicy: {
@@ -32,7 +34,6 @@ async function bootstrap() {
       },
     }),
   );
-  const logger = app.get(Logger);
 
   const opts: DoubleCsrfConfigOptions = {
     getSecret: () => 'Secret', //TODO:generate a secret
@@ -50,10 +51,7 @@ async function bootstrap() {
   const { doubleCsrfProtection } = doubleCsrf(opts);
   app.use(doubleCsrfProtection);
   //
-  app.useGlobalInterceptors(
-    new LoggerInterceptor(),
-    new ResponseFormatterInterceptor(),
-  );
+  app.useGlobalInterceptors(new ResponseFormatterInterceptor());
   // //PIPES
   app.useGlobalPipes(
     new ValidationPipe({
