@@ -9,7 +9,7 @@ import {
 import {
   compareHash,
   generateHash,
-} from 'src/common/utils/authentication/bcrypt.utils';
+} from 'src/common/utils/authentication/hash.utils';
 import { AuthResponseDto } from './dtos/responses/auth-response.dto';
 import { registerDto } from './dtos/requests/register.dto';
 import { JwtService } from '@nestjs/jwt';

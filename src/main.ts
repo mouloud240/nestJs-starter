@@ -9,6 +9,7 @@ import { ResponseFormatterInterceptor } from './common/interceptors/response-for
 import { HttpExceptionFilter } from './common/filter/httpException.filter';
 import { ExtendedRequest } from './core/authentication/types/extended-req.type';
 import { LoggerServiceBuilder } from './monitoring/logger/logger.service';
+import { AppClusterService } from './infrastructure/clusters/app.clusterize';
 async function bootstrap() {
   // the cors will be changed to the front end url  in production environnement
   const app = await NestFactory.create(AppModule, {
@@ -120,13 +121,22 @@ async function bootstrap() {
   const port = process.env.PORT || 3000;
   await app.listen(port);
 }
-bootstrap()
-  .then(() => {
-    console.log(
-      `Application is running on: ${process.env.APP_URL || `http://localhost:${process.env.PORT || 3000}`}`,
-    );
-  })
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
+const cluserizeApp =
+  (process.env.CLUSTERIZE_APP || 'false').toLowerCase() === 'true';
+
+if (cluserizeApp) {
+  AppClusterService.clusterize(async () => {
+    await bootstrap();
   });
+} else {
+  bootstrap()
+    .then(() => {
+      console.log(
+        `Application is running on: ${process.env.APP_URL || `http://localhost:${process.env.PORT || 3000}`}`,
+      );
+    })
+    .catch((e) => {
+      console.error(e);
+      process.exit(1);
+    });
+}

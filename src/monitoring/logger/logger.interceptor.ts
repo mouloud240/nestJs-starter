@@ -21,7 +21,6 @@ export class LoggerInterceptor implements NestInterceptor {
     context: ExecutionContext,
     next: CallHandler<any>,
   ): Observable<any> {
-    console.debug('LoggerInterceptor invoked');
     const startTime = Date.now();
     const request = context.switchToHttp().getRequest<Request>();
     const userIp = request.ip;
